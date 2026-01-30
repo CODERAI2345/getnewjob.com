@@ -1,0 +1,66 @@
+export interface Portal {
+  id: string;
+  name: string;
+  url: string;
+  category: string;
+  icon?: string;
+  isFavorite: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Company {
+  id: string;
+  name: string;
+  careerUrl: string;
+  linkedinUrl?: string;
+  foundedYear?: number;
+  hqCity?: string;
+  hqCountry?: string;
+  industry?: string;
+  companySize?: string;
+  technologies?: string[];
+  description?: string;
+  notes?: string;
+  isFavorite: boolean;
+  isPinned: boolean;
+  applicationStatus?: ApplicationStatus;
+  appliedDate?: string;
+  hrContact?: string;
+  collectionIds?: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Collection {
+  id: string;
+  name: string;
+  description?: string;
+  companyIds: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ApplicationStatus = 
+  | 'not_applied' 
+  | 'applied' 
+  | 'interview' 
+  | 'offer' 
+  | 'rejected';
+
+export interface ImportResult {
+  total: number;
+  added: number;
+  skipped: number;
+  errors: string[];
+}
+
+export type SortOption = 'a-z' | 'z-a' | 'newest' | 'oldest' | 'size';
+
+export interface FilterState {
+  search: string;
+  industry?: string;
+  companySize?: string;
+  location?: string;
+  technologies?: string[];
+}

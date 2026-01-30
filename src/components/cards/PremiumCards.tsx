@@ -1,0 +1,278 @@
+import { ReactNode } from 'react';
+import { ArrowRight, Star, Pin, Edit2, Trash2, ExternalLink } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+interface PremiumCardProps {
+  children: ReactNode;
+  className?: string;
+  onClick?: () => void;
+  interactive?: boolean;
+}
+
+export function PremiumCard({ children, className, onClick, interactive = false }: PremiumCardProps) {
+  return (
+    <div
+      onClick={onClick}
+      className={cn(
+        interactive ? 'premium-card-interactive' : 'premium-card',
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+interface PortalCardProps {
+  name: string;
+  category: string;
+  icon?: string;
+  isFavorite: boolean;
+  onFavorite: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  onOpen: () => void;
+}
+
+export function PortalCard({
+  name,
+  category,
+  icon,
+  isFavorite,
+  onFavorite,
+  onEdit,
+  onDelete,
+  onOpen,
+}: PortalCardProps) {
+  return (
+    <div className="group premium-card-interactive" onClick={onOpen}>
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-4">
+          <div className="icon-box">
+            {icon ? (
+              <span className="text-2xl">{icon}</span>
+            ) : (
+              <span className="text-primary font-bold text-lg">{name.charAt(0)}</span>
+            )}
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+              {name}
+            </h3>
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground mt-1">
+              {category}
+            </span>
+          </div>
+        </div>
+        <ArrowRight className="w-5 h-5 text-muted-foreground arrow-slide" />
+      </div>
+      
+      {/* Actions */}
+      <div 
+        className="flex items-center gap-2 mt-4 pt-4 border-t border-border/50"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onFavorite}
+          className={cn(
+            "p-2 rounded-lg transition-all duration-200",
+            isFavorite 
+              ? "text-amber-500 bg-amber-500/10 hover:bg-amber-500/20" 
+              : "text-muted-foreground hover:text-amber-500 hover:bg-muted"
+          )}
+        >
+          <Star className={cn("w-4 h-4", isFavorite && "fill-current")} />
+        </button>
+        <button
+          onClick={onEdit}
+          className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted transition-all duration-200"
+        >
+          <Edit2 className="w-4 h-4" />
+        </button>
+        <button
+          onClick={onDelete}
+          className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+interface CompanyCardProps {
+  name: string;
+  industry?: string;
+  companySize?: string;
+  hqCity?: string;
+  hqCountry?: string;
+  technologies?: string[];
+  isFavorite: boolean;
+  isPinned: boolean;
+  onFavorite: () => void;
+  onPin: () => void;
+  onClick: () => void;
+}
+
+export function CompanyCard({
+  name,
+  industry,
+  companySize,
+  hqCity,
+  hqCountry,
+  technologies,
+  isFavorite,
+  isPinned,
+  onFavorite,
+  onPin,
+  onClick,
+}: CompanyCardProps) {
+  const location = [hqCity, hqCountry].filter(Boolean).join(', ');
+
+  return (
+    <div className="group premium-card-interactive relative" onClick={onClick}>
+      {isPinned && (
+        <div className="pinned-badge">
+          <Pin className="w-3 h-3" />
+        </div>
+      )}
+      
+      <div className="flex items-start justify-between mb-3">
+        <div className="icon-box icon-box-primary">
+          <span className="font-bold text-lg">{name.charAt(0)}</span>
+        </div>
+        <ArrowRight className="w-5 h-5 text-muted-foreground arrow-slide" />
+      </div>
+
+      <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors mb-2">
+        {name}
+      </h3>
+
+      <div className="flex flex-wrap gap-2 mb-3">
+        {industry && (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
+            {industry}
+          </span>
+        )}
+        {companySize && (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
+            {companySize}
+          </span>
+        )}
+      </div>
+
+      {location && (
+        <p className="text-sm text-muted-foreground mb-3">{location}</p>
+      )}
+
+      {technologies && technologies.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-4">
+          {technologies.slice(0, 3).map((tech) => (
+            <span
+              key={tech}
+              className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-primary/10 text-primary"
+            >
+              {tech}
+            </span>
+          ))}
+          {technologies.length > 3 && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-muted text-muted-foreground">
+              +{technologies.length - 3}
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Actions */}
+      <div 
+        className="flex items-center gap-2 pt-4 border-t border-border/50"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onFavorite}
+          className={cn(
+            "p-2 rounded-lg transition-all duration-200",
+            isFavorite 
+              ? "text-amber-500 bg-amber-500/10 hover:bg-amber-500/20" 
+              : "text-muted-foreground hover:text-amber-500 hover:bg-muted"
+          )}
+        >
+          <Star className={cn("w-4 h-4", isFavorite && "fill-current")} />
+        </button>
+        <button
+          onClick={onPin}
+          className={cn(
+            "p-2 rounded-lg transition-all duration-200",
+            isPinned 
+              ? "text-primary bg-primary/10 hover:bg-primary/20" 
+              : "text-muted-foreground hover:text-primary hover:bg-muted"
+          )}
+        >
+          <Pin className={cn("w-4 h-4", isPinned && "fill-current")} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+interface CollectionCardProps {
+  name: string;
+  description?: string;
+  companyCount: number;
+  onClick: () => void;
+}
+
+export function CollectionCard({ name, description, companyCount, onClick }: CollectionCardProps) {
+  return (
+    <div className="group premium-card-interactive" onClick={onClick}>
+      <div className="flex items-start justify-between mb-3">
+        <div className="icon-box">
+          <span className="text-primary font-bold text-lg">{name.charAt(0)}</span>
+        </div>
+        <ArrowRight className="w-5 h-5 text-muted-foreground arrow-slide" />
+      </div>
+
+      <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors mb-1">
+        {name}
+      </h3>
+      
+      {description && (
+        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{description}</p>
+      )}
+
+      <div className="flex items-center gap-2 pt-3 border-t border-border/50">
+        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
+          {companyCount} {companyCount === 1 ? 'company' : 'companies'}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+interface LinkCardProps {
+  title: string;
+  url: string;
+  icon?: ReactNode;
+}
+
+export function LinkCard({ title, url, icon }: LinkCardProps) {
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="link-card group"
+    >
+      <div className="icon-box">
+        {icon || <ExternalLink className="w-5 h-5 text-primary" />}
+      </div>
+      <div className="flex-1">
+        <h4 className="font-medium text-foreground group-hover:text-primary transition-colors">
+          {title}
+        </h4>
+        <p className="text-sm text-muted-foreground truncate">{url}</p>
+      </div>
+      <ArrowRight className="w-5 h-5 text-muted-foreground arrow-slide" />
+    </a>
+  );
+}
