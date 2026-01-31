@@ -36,7 +36,9 @@ export function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
       throw new Error('CSV file must have a header row and at least one data row');
     }
 
-    const headers = lines[0].split(',').map((h) => h.trim().toLowerCase().replace(/['"]/g, ''));
+    // Parse header row handling quotes and spaces
+    const rawHeaders = parseCSVLine(lines[0]);
+    const headers = rawHeaders.map((h) => h.trim().toLowerCase());
     const data: Partial<Company>[] = [];
 
     for (let i = 1; i < lines.length; i++) {
@@ -47,12 +49,50 @@ export function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
         const value = values[index]?.trim();
         if (!value) return;
 
+        // New column mapping with spaces in names
         switch (header) {
+          case 'company name':
           case 'companyname':
           case 'company_name':
           case 'name':
             row.name = value;
             break;
+          case 'logo':
+          case 'logourl':
+          case 'logo_url':
+            row.logoUrl = value;
+            break;
+          case 'industry':
+            row.industry = value;
+            break;
+          case 'location':
+            row.location = value;
+            row.hqCity = value; // Also map to hqCity for compatibility
+            break;
+          case 'description':
+            row.description = value;
+            break;
+          case 'website':
+          case 'website url':
+            row.website = value;
+            row.careerUrl = row.careerUrl || value; // Use as careerUrl if not set
+            break;
+          case 'company size':
+          case 'companysize':
+          case 'company_size':
+          case 'size':
+            row.companySize = value;
+            break;
+          case 'hq':
+          case 'headquarters':
+            row.hq = value;
+            row.hqCountry = value; // Map to hqCountry
+            break;
+          case 'about':
+            row.about = value;
+            row.description = row.description || value; // Fallback to description
+            break;
+          // Legacy mappings for backward compatibility
           case 'careerurl':
           case 'career_url':
           case 'careersiteurl':
@@ -78,21 +118,9 @@ export function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
           case 'country':
             row.hqCountry = value;
             break;
-          case 'industry':
-            row.industry = value;
-            break;
-          case 'companysize':
-          case 'company_size':
-          case 'size':
-            row.companySize = value;
-            break;
           case 'technologies':
           case 'tech':
             row.technologies = value.split(';').map((t) => t.trim()).filter(Boolean);
-            break;
-          case 'description':
-          case 'about':
-            row.description = value;
             break;
           case 'notes':
             row.notes = value;
@@ -100,7 +128,14 @@ export function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
         }
       });
 
-      if (row.name || row.careerUrl) {
+      // Only company name is required
+      if (row.name) {
+        // Ensure careerUrl has a fallback
+        if (!row.careerUrl && row.website) {
+          row.careerUrl = row.website;
+        } else if (!row.careerUrl) {
+          row.careerUrl = '#';
+        }
         data.push(row);
       }
     }
@@ -212,13 +247,13 @@ export function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
             <div className="bg-muted/50 rounded-xl p-4 mb-6">
               <h3 className="font-medium text-sm mb-2">CSV Template Guide</h3>
               <p className="text-xs text-muted-foreground mb-2">
-                <strong>Required columns:</strong> companyName, careerUrl
+                <strong>Required column:</strong> Company Name
               </p>
               <p className="text-xs text-muted-foreground mb-2">
-                <strong>Optional:</strong> linkedinUrl, foundedYear, hqCity, hqCountry, industry, companySize, technologies, description, notes
+                <strong>Optional:</strong> Logo, Industry, Location, Description, Website, Company Size, HQ, About
               </p>
               <p className="text-xs text-muted-foreground">
-                <strong>Technologies format:</strong> AWS;Kubernetes;DevOps (semicolon-separated)
+                <strong>Note:</strong> Column names can include spaces. Supports 250+ records per file.
               </p>
             </div>
 
