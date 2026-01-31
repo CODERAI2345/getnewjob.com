@@ -109,16 +109,6 @@ export default function Portals() {
               </SelectContent>
             </Select>
 
-            <Button
-              onClick={() => {
-                setEditingPortal(undefined);
-                setIsModalOpen(true);
-              }}
-              className="btn-gradient"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Portal
-            </Button>
           </div>
         </div>
 
@@ -147,20 +137,11 @@ export default function Portals() {
             <h3 className="font-semibold text-lg text-foreground mb-2">
               {portals.length === 0 ? 'No portals yet' : 'No results found'}
             </h3>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-muted-foreground">
               {portals.length === 0
-                ? 'Add your first job portal to get started.'
+                ? 'No job portals available.'
                 : 'Try adjusting your search or filters.'}
             </p>
-            {portals.length === 0 && (
-              <Button
-                onClick={() => setIsModalOpen(true)}
-                className="btn-gradient"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Your First Portal
-              </Button>
-            )}
           </div>
         )}
       </div>
