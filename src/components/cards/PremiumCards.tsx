@@ -1,6 +1,7 @@
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { ArrowRight, Star, Pin, Edit2, Trash2, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getTypographyTheme } from '@/components/inputs/RichTextPaste';
 
 interface PremiumCardProps {
   children: ReactNode;
@@ -102,6 +103,8 @@ export function PortalCard({
 
 interface CompanyCardProps {
   name: string;
+  brandTitleHtml?: string;
+  logoUrl?: string;
   industry?: string;
   companySize?: string;
   hqCity?: string;
@@ -116,6 +119,8 @@ interface CompanyCardProps {
 
 export function CompanyCard({
   name,
+  brandTitleHtml,
+  logoUrl,
   industry,
   companySize,
   hqCity,
@@ -128,6 +133,9 @@ export function CompanyCard({
   onClick,
 }: CompanyCardProps) {
   const location = [hqCity, hqCountry].filter(Boolean).join(', ');
+  
+  // Get typography theme for fallback styling
+  const typographyTheme = useMemo(() => getTypographyTheme(name), [name]);
 
   return (
     <div className="group premium-card-interactive relative" onClick={onClick}>
@@ -138,15 +146,33 @@ export function CompanyCard({
       )}
       
       <div className="flex items-start justify-between mb-3">
-        <div className="icon-box icon-box-primary">
-          <span className="font-bold text-lg">{name.charAt(0)}</span>
+        <div className="icon-box icon-box-primary overflow-hidden">
+          {logoUrl ? (
+            <img src={logoUrl} alt={name} className="w-full h-full object-contain" />
+          ) : (
+            <span className="font-bold text-lg">{name.charAt(0)}</span>
+          )}
         </div>
         <ArrowRight className="w-5 h-5 text-muted-foreground arrow-slide" />
       </div>
 
-      <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors mb-2">
-        {name}
-      </h3>
+      {brandTitleHtml ? (
+        <h3 
+          className="font-semibold text-lg mb-2 group-hover:opacity-80 transition-opacity"
+          dangerouslySetInnerHTML={{ __html: brandTitleHtml }}
+        />
+      ) : (
+        <h3 
+          className="font-semibold text-lg mb-2 group-hover:opacity-80 transition-opacity"
+          style={{
+            fontWeight: typographyTheme.fontWeight,
+            color: typographyTheme.color,
+            fontStyle: typographyTheme.fontStyle as 'normal' | 'italic',
+          }}
+        >
+          {name}
+        </h3>
+      )}
 
       <div className="flex flex-wrap gap-2 mb-3">
         {industry && (

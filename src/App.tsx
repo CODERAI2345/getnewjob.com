@@ -9,6 +9,7 @@ import Companies from "./pages/Companies";
 import Collections from "./pages/Collections";
 import Favorites from "./pages/Favorites";
 import CompanyDetail from "./pages/CompanyDetail";
+import Customize from "./pages/Customize";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/collections" element={<Collections />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/company/:id" element={<CompanyDetail />} />
+          <Route path="/customize" element={<Customize />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

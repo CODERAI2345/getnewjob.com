@@ -72,17 +72,15 @@ export function useCompanies() {
     const newCompanies: Company[] = [];
 
     data.forEach((row, index) => {
-      // Validate required fields
-      if (!row.name || !row.careerUrl) {
-        result.errors.push(`Row ${index + 1}: Missing required fields (companyName or careerUrl)`);
+      // Validate required fields - only company name is required now
+      if (!row.name) {
+        result.errors.push(`Row ${index + 1}: Missing required field (Company Name)`);
         return;
       }
 
-      // Check for duplicates
+      // Check for duplicates by company name (case-insensitive)
       const isDuplicate = companies.some(
-        (c) => 
-          c.name.toLowerCase() === row.name!.toLowerCase() ||
-          (row.linkedinUrl && c.linkedinUrl?.toLowerCase() === row.linkedinUrl.toLowerCase())
+        (c) => c.name.toLowerCase() === row.name!.toLowerCase()
       );
 
       if (isDuplicate) {
@@ -93,15 +91,21 @@ export function useCompanies() {
       newCompanies.push({
         id: crypto.randomUUID(),
         name: row.name,
-        careerUrl: row.careerUrl,
+        brandTitleHtml: row.brandTitleHtml,
+        logoUrl: row.logoUrl,
+        careerUrl: row.careerUrl || row.website || '#',
+        website: row.website,
         linkedinUrl: row.linkedinUrl,
         foundedYear: row.foundedYear,
-        hqCity: row.hqCity,
-        hqCountry: row.hqCountry,
+        hqCity: row.hqCity || row.location,
+        hqCountry: row.hqCountry || row.hq,
+        hq: row.hq,
+        location: row.location,
         industry: row.industry,
         companySize: row.companySize,
         technologies: row.technologies,
-        description: row.description,
+        description: row.description || row.about,
+        about: row.about,
         notes: row.notes,
         isFavorite: false,
         isPinned: false,

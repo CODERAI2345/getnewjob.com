@@ -205,6 +205,8 @@ export default function Companies() {
               <CompanyCard
                 key={company.id}
                 name={company.name}
+                brandTitleHtml={company.brandTitleHtml}
+                logoUrl={company.logoUrl}
                 industry={company.industry}
                 companySize={company.companySize}
                 hqCity={company.hqCity}

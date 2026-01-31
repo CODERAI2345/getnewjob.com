@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { RichTextPaste } from '@/components/inputs/RichTextPaste';
 import { Portal } from '@/types';
 
 interface PortalModalProps {
@@ -168,7 +169,9 @@ const companySizes = [
 export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalProps) {
   const [formData, setFormData] = useState({
     name: company?.name || '',
+    brandTitleHtml: company?.brandTitleHtml || '',
     careerUrl: company?.careerUrl || '',
+    website: company?.website || '',
     linkedinUrl: company?.linkedinUrl || '',
     foundedYear: company?.foundedYear || '',
     hqCity: company?.hqCity || '',
@@ -184,10 +187,13 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.careerUrl) return;
+    if (!formData.name) return;
 
     onSave({
       ...formData,
+      brandTitleHtml: formData.brandTitleHtml || undefined,
+      careerUrl: formData.careerUrl || formData.website || '#',
+      website: formData.website || undefined,
       foundedYear: formData.foundedYear ? parseInt(formData.foundedYear) : undefined,
       technologies: formData.technologies
         ? formData.technologies.split(',').map((t) => t.trim()).filter(Boolean)
@@ -230,7 +236,28 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
             </div>
 
             <div>
-              <Label htmlFor="careerUrl">Career Site URL *</Label>
+              <Label htmlFor="website">Website</Label>
+              <Input
+                id="website"
+                type="url"
+                value={formData.website}
+                onChange={(e) => updateField('website', e.target.value)}
+                placeholder="https://acme.com"
+                className="mt-1.5"
+              />
+            </div>
+          </div>
+
+          <RichTextPaste
+            label="Company Brand Title (paste styled text)"
+            value={formData.brandTitleHtml}
+            onChange={(html) => updateField('brandTitleHtml', html)}
+            placeholder="Paste the company title with styling from their website..."
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="careerUrl">Career Site URL</Label>
               <Input
                 id="careerUrl"
                 type="url"
@@ -238,12 +265,9 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
                 onChange={(e) => updateField('careerUrl', e.target.value)}
                 placeholder="https://careers.acme.com"
                 className="mt-1.5"
-                required
               />
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="linkedinUrl">LinkedIn Company Page</Label>
               <Input
@@ -255,7 +279,9 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
                 className="mt-1.5"
               />
             </div>
+          </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="foundedYear">Founded Year</Label>
               <Input
@@ -269,9 +295,7 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
                 max={new Date().getFullYear()}
               />
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="hqCity">HQ City</Label>
               <Input
@@ -282,7 +306,9 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
                 className="mt-1.5"
               />
             </div>
+          </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="hqCountry">HQ Country</Label>
               <Input
@@ -293,9 +319,7 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
                 className="mt-1.5"
               />
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="industry">Industry</Label>
               <Select value={formData.industry} onValueChange={(v) => updateField('industry', v)}>
@@ -311,7 +335,9 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
                 </SelectContent>
               </Select>
             </div>
+          </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="companySize">Company Size</Label>
               <Select value={formData.companySize} onValueChange={(v) => updateField('companySize', v)}>
