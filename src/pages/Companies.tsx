@@ -1,11 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Filter, Upload, Download, ArrowUpDown } from 'lucide-react';
+import { Search, Filter, Upload, Download, ArrowUpDown, Edit2 } from 'lucide-react';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CompanyCard } from '@/components/cards/PremiumCards';
-import { CompanyModal } from '@/components/modals/FormModals';
 import { ImportModal } from '@/components/modals/ImportModal';
 import { useCompanies } from '@/hooks/useCompanies';
 import { Company, SortOption } from '@/types';
@@ -47,12 +46,11 @@ const companySizes = [
 
 export default function Companies() {
   const navigate = useNavigate();
-  const { companies, addCompany, toggleFavorite, togglePinned, importCompanies, exportCompanies } = useCompanies();
+  const { companies, togglePinned, importCompanies, exportCompanies } = useCompanies();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState('All');
   const [selectedSize, setSelectedSize] = useState('All');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   const filteredAndSortedCompanies = useMemo(() => {
@@ -94,10 +92,6 @@ export default function Companies() {
     return result;
   }, [companies, searchQuery, selectedIndustry, selectedSize, sortBy]);
 
-  const handleSave = (data: Partial<Company>) => {
-    addCompany(data as Omit<Company, 'id' | 'createdAt' | 'updatedAt' | 'isFavorite' | 'isPinned'>);
-  };
-
   const handleExport = () => {
     const data = exportCompanies();
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -113,12 +107,12 @@ export default function Companies() {
     <PageLayout>
       <div className="section-container py-8">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 animate-fade-in">
           <h1 className="font-display text-3xl font-bold text-foreground mb-2">
             Companies Directory
           </h1>
           <p className="text-muted-foreground">
-            Browse and manage your saved companies.
+            Browse and discover companies in your saved directory.
           </p>
         </div>
 
@@ -132,14 +126,14 @@ export default function Companies() {
               placeholder="Search companies, industries, or technologies..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
+              className="pl-9 rounded-xl"
             />
           </div>
 
           {/* Filters row */}
           <div className="flex flex-wrap gap-3">
             <Select value={selectedIndustry} onValueChange={setSelectedIndustry}>
-              <SelectTrigger className="w-[160px]">
+              <SelectTrigger className="w-[160px] rounded-xl">
                 <Filter className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="Industry" />
               </SelectTrigger>
@@ -153,7 +147,7 @@ export default function Companies() {
             </Select>
 
             <Select value={selectedSize} onValueChange={setSelectedSize}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-[140px] rounded-xl">
                 <SelectValue placeholder="Size" />
               </SelectTrigger>
               <SelectContent>
@@ -166,7 +160,7 @@ export default function Companies() {
             </Select>
 
             <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
-              <SelectTrigger className="w-[130px]">
+              <SelectTrigger className="w-[130px] rounded-xl">
                 <ArrowUpDown className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="Sort" />
               </SelectTrigger>
@@ -181,26 +175,21 @@ export default function Companies() {
 
             <div className="flex-1" />
 
-            <Button variant="outline" onClick={() => setIsImportModalOpen(true)}>
+            <Button variant="outline" onClick={() => setIsImportModalOpen(true)} className="rounded-xl">
               <Upload className="w-4 h-4 mr-2" />
               Import
             </Button>
 
-            <Button variant="outline" onClick={handleExport}>
+            <Button variant="outline" onClick={handleExport} className="rounded-xl">
               <Download className="w-4 h-4 mr-2" />
               Export
-            </Button>
-
-            <Button onClick={() => setIsModalOpen(true)} className="btn-gradient">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Company
             </Button>
           </div>
         </div>
 
         {/* Companies grid */}
         {filteredAndSortedCompanies.length > 0 ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 stagger-animate">
             {filteredAndSortedCompanies.map((company) => (
               <CompanyCard
                 key={company.id}
@@ -212,16 +201,14 @@ export default function Companies() {
                 hqCity={company.hqCity}
                 hqCountry={company.hqCountry}
                 technologies={company.technologies}
-                isFavorite={company.isFavorite}
                 isPinned={company.isPinned}
-                onFavorite={() => toggleFavorite(company.id)}
                 onPin={() => togglePinned(company.id)}
                 onClick={() => navigate(`/company/${company.id}`)}
               />
             ))}
           </div>
         ) : (
-          <div className="text-center py-16">
+          <div className="text-center py-16 animate-fade-in">
             <div className="icon-box w-16 h-16 mx-auto mb-4">
               <Search className="w-8 h-8 text-primary" />
             </div>
@@ -230,20 +217,14 @@ export default function Companies() {
             </h3>
             <p className="text-muted-foreground mb-6">
               {companies.length === 0
-                ? 'Add your first company or import from CSV.'
+                ? 'Import companies from CSV using the admin panel.'
                 : 'Try adjusting your search or filters.'}
             </p>
             {companies.length === 0 && (
-              <div className="flex justify-center gap-4">
-                <Button variant="outline" onClick={() => setIsImportModalOpen(true)}>
-                  <Upload className="w-4 h-4 mr-2" />
-                  Import from CSV
-                </Button>
-                <Button onClick={() => setIsModalOpen(true)} className="btn-gradient">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Company
-                </Button>
-              </div>
+              <Button variant="outline" onClick={() => setIsImportModalOpen(true)} className="rounded-xl">
+                <Upload className="w-4 h-4 mr-2" />
+                Import from CSV
+              </Button>
             )}
           </div>
         )}
@@ -255,12 +236,6 @@ export default function Companies() {
           </div>
         )}
       </div>
-
-      <CompanyModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSave}
-      />
 
       <ImportModal
         isOpen={isImportModalOpen}

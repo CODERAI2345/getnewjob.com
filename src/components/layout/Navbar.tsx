@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Moon, Sun, Menu, X } from 'lucide-react';
+import { Search, Moon, Sun, Menu, X, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/components/ui/button';
@@ -9,8 +9,6 @@ const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/portals', label: 'Portals' },
   { href: '/companies', label: 'Companies' },
-  { href: '/collections', label: 'Collections' },
-  { href: '/favorites', label: 'Favorites' },
 ];
 
 interface NavbarProps {
@@ -33,8 +31,8 @@ export function Navbar({ onSearch }: NavbarProps) {
       <div className="section-container">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
               <span className="text-primary-foreground font-bold text-sm">CH</span>
             </div>
             <span className="font-display font-bold text-xl gradient-text">CareerHub</span>
@@ -46,13 +44,16 @@ export function Navbar({ onSearch }: NavbarProps) {
               <Link
                 key={link.href}
                 to={link.href}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 relative overflow-hidden ${
                   location.pathname === link.href
                     ? 'text-primary bg-secondary'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
               >
                 {link.label}
+                {location.pathname === link.href && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-0.5 rounded-full bg-gradient-to-r from-primary to-accent" />
+                )}
               </Link>
             ))}
           </nav>
@@ -61,24 +62,35 @@ export function Navbar({ onSearch }: NavbarProps) {
           <div className="flex items-center gap-3">
             {/* Search */}
             <form onSubmit={handleSearch} className="hidden sm:block">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <div className="relative group">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
                 <Input
                   type="search"
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 w-48 lg:w-64 h-9 bg-muted/50 border-border/50 focus:bg-card"
+                  className="pl-9 w-48 lg:w-64 h-9 bg-muted/50 border-border/50 focus:bg-card rounded-xl transition-all duration-300 focus:w-72"
                 />
               </div>
             </form>
+
+            {/* Admin Link */}
+            <Link to="/customize">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-9 h-9 rounded-xl hover:bg-secondary transition-all duration-300"
+              >
+                <Settings className="w-4 h-4" />
+              </Button>
+            </Link>
 
             {/* Theme toggle */}
             <Button
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="w-9 h-9 rounded-lg"
+              className="w-9 h-9 rounded-xl hover:bg-secondary transition-all duration-300"
             >
               {theme === 'light' ? (
                 <Moon className="w-4 h-4" />
@@ -91,7 +103,7 @@ export function Navbar({ onSearch }: NavbarProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden w-9 h-9 rounded-lg"
+              className="md:hidden w-9 h-9 rounded-xl"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -108,7 +120,7 @@ export function Navbar({ onSearch }: NavbarProps) {
                   key={link.href}
                   to={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
                     location.pathname === link.href
                       ? 'text-primary bg-secondary'
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -127,7 +139,7 @@ export function Navbar({ onSearch }: NavbarProps) {
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 w-full h-10 bg-muted/50 border-border/50"
+                  className="pl-9 w-full h-10 bg-muted/50 border-border/50 rounded-xl"
                 />
               </div>
             </form>

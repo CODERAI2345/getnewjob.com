@@ -1,5 +1,5 @@
 import { ReactNode, useMemo } from 'react';
-import { ArrowRight, Star, Pin, Edit2, Trash2, ExternalLink } from 'lucide-react';
+import { ArrowRight, Pin, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getTypographyTheme } from '@/components/inputs/RichTextPaste';
 
@@ -28,10 +28,6 @@ interface PortalCardProps {
   name: string;
   category: string;
   icon?: string;
-  isFavorite: boolean;
-  onFavorite: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
   onOpen: () => void;
 }
 
@@ -39,10 +35,6 @@ export function PortalCard({
   name,
   category,
   icon,
-  isFavorite,
-  onFavorite,
-  onEdit,
-  onDelete,
   onOpen,
 }: PortalCardProps) {
   return (
@@ -67,36 +59,6 @@ export function PortalCard({
         </div>
         <ArrowRight className="w-5 h-5 text-muted-foreground arrow-slide" />
       </div>
-      
-      {/* Actions */}
-      <div 
-        className="flex items-center gap-2 mt-4 pt-4 border-t border-border/50"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={onFavorite}
-          className={cn(
-            "p-2 rounded-lg transition-all duration-200",
-            isFavorite 
-              ? "text-amber-500 bg-amber-500/10 hover:bg-amber-500/20" 
-              : "text-muted-foreground hover:text-amber-500 hover:bg-muted"
-          )}
-        >
-          <Star className={cn("w-4 h-4", isFavorite && "fill-current")} />
-        </button>
-        <button
-          onClick={onEdit}
-          className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted transition-all duration-200"
-        >
-          <Edit2 className="w-4 h-4" />
-        </button>
-        <button
-          onClick={onDelete}
-          className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
-      </div>
     </div>
   );
 }
@@ -110,9 +72,7 @@ interface CompanyCardProps {
   hqCity?: string;
   hqCountry?: string;
   technologies?: string[];
-  isFavorite: boolean;
   isPinned: boolean;
-  onFavorite: () => void;
   onPin: () => void;
   onClick: () => void;
 }
@@ -126,9 +86,7 @@ export function CompanyCard({
   hqCity,
   hqCountry,
   technologies,
-  isFavorite,
   isPinned,
-  onFavorite,
   onPin,
   onClick,
 }: CompanyCardProps) {
@@ -215,17 +173,6 @@ export function CompanyCard({
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          onClick={onFavorite}
-          className={cn(
-            "p-2 rounded-lg transition-all duration-200",
-            isFavorite 
-              ? "text-amber-500 bg-amber-500/10 hover:bg-amber-500/20" 
-              : "text-muted-foreground hover:text-amber-500 hover:bg-muted"
-          )}
-        >
-          <Star className={cn("w-4 h-4", isFavorite && "fill-current")} />
-        </button>
-        <button
           onClick={onPin}
           className={cn(
             "p-2 rounded-lg transition-all duration-200",
@@ -236,40 +183,6 @@ export function CompanyCard({
         >
           <Pin className={cn("w-4 h-4", isPinned && "fill-current")} />
         </button>
-      </div>
-    </div>
-  );
-}
-
-interface CollectionCardProps {
-  name: string;
-  description?: string;
-  companyCount: number;
-  onClick: () => void;
-}
-
-export function CollectionCard({ name, description, companyCount, onClick }: CollectionCardProps) {
-  return (
-    <div className="group premium-card-interactive" onClick={onClick}>
-      <div className="flex items-start justify-between mb-3">
-        <div className="icon-box">
-          <span className="text-primary font-bold text-lg">{name.charAt(0)}</span>
-        </div>
-        <ArrowRight className="w-5 h-5 text-muted-foreground arrow-slide" />
-      </div>
-
-      <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors mb-1">
-        {name}
-      </h3>
-      
-      {description && (
-        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{description}</p>
-      )}
-
-      <div className="flex items-center gap-2 pt-3 border-t border-border/50">
-        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
-          {companyCount} {companyCount === 1 ? 'company' : 'companies'}
-        </span>
       </div>
     </div>
   );
