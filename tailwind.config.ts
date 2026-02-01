@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'DM Sans', 'system-ui', 'sans-serif'],
-        display: ['DM Sans', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'Space Grotesk', 'system-ui', 'sans-serif'],
+        display: ['Space Grotesk', 'Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -62,9 +62,9 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        purple: {
-          glow: "hsl(var(--purple-glow))",
-          border: "hsl(var(--purple-border))",
+        glow: {
+          color: "hsl(var(--glow-color))",
+          border: "hsl(var(--glow-border))",
         },
         section: {
           tint: "hsl(var(--section-tint))",
@@ -78,10 +78,10 @@ export default {
         "2xl": "calc(var(--radius) + 8px)",
       },
       boxShadow: {
-        'card': '0 1px 3px hsl(var(--card-shadow) / 0.08), 0 4px 12px hsl(var(--card-shadow) / 0.04)',
-        'card-hover': '0 4px 12px hsl(var(--card-shadow) / 0.12), 0 12px 32px hsl(var(--card-shadow) / 0.08)',
-        'purple': '0 8px 24px hsl(var(--primary) / 0.35)',
-        'purple-lg': '0 12px 40px hsl(var(--primary) / 0.4)',
+        'card': '0 2px 8px hsl(var(--card-shadow) / 0.06), 0 8px 24px hsl(var(--card-shadow) / 0.04)',
+        'card-hover': '0 8px 24px hsl(var(--card-shadow) / 0.1), 0 24px 48px hsl(var(--card-shadow) / 0.08)',
+        'glow': '0 10px 30px hsl(var(--primary) / 0.4)',
+        'glow-lg': '0 15px 50px hsl(var(--primary) / 0.5)',
       },
       keyframes: {
         "accordion-down": {
@@ -114,11 +114,15 @@ export default {
         },
         "float": {
           "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-10px)" },
+          "50%": { transform: "translateY(-12px)" },
         },
         "pulse-glow": {
           "0%, 100%": { boxShadow: "0 0 20px hsl(var(--primary) / 0.3)" },
           "50%": { boxShadow: "0 0 40px hsl(var(--primary) / 0.5)" },
+        },
+        "rotate-gradient": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
         },
       },
       animation: {
@@ -131,6 +135,7 @@ export default {
         "shimmer": "shimmer 2s linear infinite",
         "float": "float 6s ease-in-out infinite",
         "pulse-glow": "pulse-glow 3s ease-in-out infinite",
+        "rotate-gradient": "rotate-gradient 20s linear infinite",
       },
     },
   },

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Building2, Link as LinkIcon, Briefcase, Layers, Zap, Shield } from 'lucide-react';
+import { ArrowRight, Building2, Link as LinkIcon, Zap, Shield, Sparkles } from 'lucide-react';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
 import { PremiumCard } from '@/components/cards/PremiumCards';
@@ -17,9 +17,9 @@ const features = [
     description: 'Keep all your job search portals in one place for quick access.',
   },
   {
-    icon: Layers,
-    title: 'Smart Collections',
-    description: 'Group companies by industry, location, or any criteria that matters to you.',
+    icon: Sparkles,
+    title: 'Smart Organization',
+    description: 'Filter and search companies by industry, location, or technologies.',
   },
 ];
 
@@ -32,7 +32,7 @@ const steps = [
   {
     number: '02',
     title: 'Organize & Track',
-    description: 'Create collections, pin favorites, and track your application progress.',
+    description: 'Filter by industry, pin important ones, and track your application progress.',
   },
   {
     number: '03',
@@ -46,11 +46,11 @@ export default function Home() {
     <PageLayout>
       {/* Hero Section */}
       <section className="relative overflow-hidden gradient-bg-hero">
-        <div className="section-container py-20 lg:py-32">
+        <div className="section-container py-20 lg:py-32 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left content */}
             <div className="animate-fade-in">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary text-secondary-foreground text-sm font-medium mb-6 animate-pulse-glow">
                 <Zap className="w-4 h-4" />
                 Your Career Command Center
               </div>
@@ -73,24 +73,24 @@ export default function Home() {
                   </Button>
                 </Link>
                 <Link to="/portals">
-                  <Button variant="outline" className="h-12 px-6 text-base border-purple-border hover:bg-secondary">
-                    Add Portal
+                  <Button variant="outline" className="h-12 px-6 text-base border-glow-border hover:bg-secondary transition-all duration-300">
+                    Browse Portals
                   </Button>
                 </Link>
               </div>
 
               {/* Stats */}
               <div className="flex gap-8 mt-12 pt-8 border-t border-border/50">
-                <div>
-                  <p className="text-3xl font-bold gradient-text">100%</p>
+                <div className="group">
+                  <p className="text-3xl font-bold gradient-text transition-transform duration-300 group-hover:scale-110">100%</p>
                   <p className="text-sm text-muted-foreground">Private & Local</p>
                 </div>
-                <div>
-                  <p className="text-3xl font-bold gradient-text">Unlimited</p>
+                <div className="group">
+                  <p className="text-3xl font-bold gradient-text transition-transform duration-300 group-hover:scale-110">Unlimited</p>
                   <p className="text-sm text-muted-foreground">Companies</p>
                 </div>
-                <div>
-                  <p className="text-3xl font-bold gradient-text">Free</p>
+                <div className="group">
+                  <p className="text-3xl font-bold gradient-text transition-transform duration-300 group-hover:scale-110">Free</p>
                   <p className="text-sm text-muted-foreground">Forever</p>
                 </div>
               </div>
@@ -102,9 +102,9 @@ export default function Home() {
                 <img
                   src={heroImage}
                   alt="Modern workplace"
-                  className="w-full h-auto object-cover"
+                  className="w-full h-auto object-cover transition-transform duration-700 hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/30 to-transparent" />
               </div>
               
               {/* Floating cards */}
@@ -120,7 +120,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="absolute -right-4 bottom-1/4 glass rounded-xl p-4 shadow-lg animate-float" style={{ animationDelay: '1s' }}>
+              <div className="absolute -right-4 bottom-1/4 glass rounded-xl p-4 shadow-lg animate-float" style={{ animationDelay: '1.5s' }}>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent to-primary flex items-center justify-center">
                     <Shield className="w-5 h-5 text-primary-foreground" />
@@ -148,10 +148,10 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-6 stagger-animate">
             {features.map((feature, index) => (
-              <PremiumCard key={index} className="text-center">
-                <div className="icon-box icon-box-primary w-14 h-14 mx-auto mb-4">
+              <PremiumCard key={index} className="text-center group">
+                <div className="icon-box icon-box-primary w-14 h-14 mx-auto mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6">
                   <feature.icon className="w-6 h-6" />
                 </div>
                 <h3 className="font-semibold text-lg text-foreground mb-2">
@@ -180,8 +180,8 @@ export default function Home() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {steps.map((step, index) => (
-              <div key={index} className="relative">
-                <div className="text-6xl font-bold gradient-text opacity-20 mb-4">
+              <div key={index} className="relative group">
+                <div className="text-6xl font-bold gradient-text opacity-25 mb-4 transition-all duration-300 group-hover:opacity-40 group-hover:scale-110">
                   {step.number}
                 </div>
                 <h3 className="font-semibold text-xl text-foreground mb-2">
@@ -191,7 +191,7 @@ export default function Home() {
                   {step.description}
                 </p>
                 {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-8 right-0 w-1/2 border-t-2 border-dashed border-purple-border" />
+                  <div className="hidden md:block absolute top-8 right-0 w-1/2 border-t-2 border-dashed border-glow-border" />
                 )}
               </div>
             ))}
@@ -215,9 +215,9 @@ export default function Home() {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
-            <Link to="/collections">
-              <Button variant="outline" className="h-12 px-8 text-base border-purple-border hover:bg-secondary">
-                View Collections
+            <Link to="/portals">
+              <Button variant="outline" className="h-12 px-8 text-base border-glow-border hover:bg-secondary transition-all duration-300">
+                View Portals
               </Button>
             </Link>
           </div>
@@ -228,8 +228,8 @@ export default function Home() {
       <footer className="py-8 border-t border-border/50">
         <div className="section-container">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+            <div className="flex items-center gap-2 group">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center transition-transform duration-300 group-hover:rotate-12">
                 <span className="text-primary-foreground font-bold text-sm">CH</span>
               </div>
               <span className="font-display font-bold gradient-text">CareerHub</span>
