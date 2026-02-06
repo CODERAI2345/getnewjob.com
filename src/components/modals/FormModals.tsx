@@ -22,19 +22,15 @@ interface PortalModalProps {
 }
 
 const categories = [
-  'Job Board',
-  'Company Career Page',
-  'Freelance',
-  'Remote Work',
-  'Tech',
-  'Startup',
-  'Enterprise',
-  'Government',
-  'Non-profit',
+  'Remote Jobs',
   'Germany',
   'Finland',
   'Sweden',
   'Norway',
+  'Job Board',
+  'Tech',
+  'Startup',
+  'Freelance',
   'Other',
 ];
 
