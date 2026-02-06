@@ -1,8 +1,11 @@
+export type PortalRegion = 'remote' | 'germany' | 'finland' | 'sweden' | 'norway' | 'all';
+
 export interface Portal {
   id: string;
   name: string;
   url: string;
   category: string;
+  region?: PortalRegion;
   icon?: string;
   isFavorite: boolean;
   createdAt: string;
