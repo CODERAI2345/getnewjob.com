@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Upload, Download, ArrowUpDown, Pin } from 'lucide-react';
 import { PageLayout } from '@/components/layout/PageLayout';
@@ -212,7 +212,19 @@ export default function Companies() {
                   <div className="flex items-start gap-4 mb-4">
                     <div className="w-12 h-12 rounded-xl bg-muted/80 border border-border/60 flex items-center justify-center overflow-hidden flex-shrink-0">
                       {company.logoUrl ? (
-                        <img src={company.logoUrl} alt={company.name} className="w-full h-full object-contain" />
+                        <>
+                          <img
+                            src={company.logoUrl}
+                            alt=""
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                              if (fallback) fallback.style.display = 'flex';
+                            }}
+                          />
+                          <span className="text-accent font-bold text-lg" style={{ display: 'none' }}>{company.name.charAt(0)}</span>
+                        </>
                       ) : (
                         <span className="text-accent font-bold text-lg">{company.name.charAt(0)}</span>
                       )}
