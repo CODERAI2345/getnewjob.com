@@ -28,6 +28,7 @@ interface PortalCardProps {
   name: string;
   category: string;
   icon?: string;
+  imageUrl?: string;
   onOpen: () => void;
 }
 
@@ -35,15 +36,23 @@ export function PortalCard({
   name,
   category,
   icon,
+  imageUrl,
   onOpen,
 }: PortalCardProps) {
   return (
     <div className="group premium-card-interactive" onClick={onOpen}>
+      {imageUrl && (
+        <div className="w-full h-32 -mt-6 -mx-6 mb-4 overflow-hidden" style={{ width: 'calc(100% + 3rem)' }}>
+          <img src={imageUrl} alt={name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        </div>
+      )}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
           <div className="icon-box">
             {icon ? (
               <span className="text-2xl">{icon}</span>
+            ) : imageUrl ? (
+              <img src={imageUrl} alt={name} className="w-full h-full object-contain rounded-xl" />
             ) : (
               <span className="text-primary font-bold text-lg">{name.charAt(0)}</span>
             )}
