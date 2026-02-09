@@ -1,6 +1,10 @@
 import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Upload, Palette, Type, RotateCcw, Download, Trash2, Image, Building2, Globe, ChevronRight } from 'lucide-react';
+import { 
+  ArrowLeft, Upload, Palette, Type, RotateCcw, Download, Trash2, 
+  Image, Building2, Globe, ChevronRight, LayoutDashboard, Database,
+  Settings2, Paintbrush, FolderCog
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
@@ -16,6 +20,7 @@ export default function Customize() {
   
   const [siteTitle, setSiteTitle] = useState(settings.siteTitle);
   const [themeColor, setThemeColor] = useState(settings.themeColor || '#14B8A6');
+  const [activeSection, setActiveSection] = useState<'overview' | 'appearance' | 'data'>('overview');
   const bannerInputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
 
@@ -105,266 +110,371 @@ export default function Customize() {
     }
   };
 
+  const sidebarItems = [
+    { id: 'overview' as const, label: 'Overview', icon: LayoutDashboard },
+    { id: 'appearance' as const, label: 'Appearance', icon: Paintbrush },
+    { id: 'data' as const, label: 'Data & Backup', icon: Database },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      {/* Top Bar */}
       <header className="sticky top-0 z-40 glass-navbar border-b border-border">
-        <div className="section-container py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
+        <div className="px-6 py-3 flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="rounded-xl">
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+              <Settings2 className="w-4 h-4 text-primary-foreground" />
+            </div>
             <div>
-              <h1 className="font-display text-xl font-bold text-foreground">Settings</h1>
-              <p className="text-sm text-muted-foreground">Admin Dashboard</p>
+              <h1 className="font-display text-lg font-bold text-foreground">Admin Dashboard</h1>
+              <p className="text-xs text-muted-foreground">Backend Management</p>
             </div>
           </div>
+          <div className="flex-1" />
+          <span className="admin-badge">Admin</span>
         </div>
       </header>
 
-      <main className="section-container py-8">
-        <div className="max-w-2xl mx-auto space-y-8">
-          
-          {/* Content Management Section */}
-          <div className="space-y-4">
-            <h2 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-primary"></span>
-              Content Management
-            </h2>
-            
-            {/* Manage Companies */}
-            <Link to="/admin/companies" className="block">
-              <div className="premium-card p-5 hover:border-primary/50 transition-all group cursor-pointer">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="icon-box">
-                      <Building2 className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                        Manage Companies
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        Add, edit, delete companies • Upload logos • Import CSV
-                      </p>
-                      <p className="text-xs text-primary mt-1">{companies.length} companies</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                </div>
-              </div>
-            </Link>
+      <div className="flex min-h-[calc(100vh-57px)]">
+        {/* Sidebar */}
+        <aside className="w-64 border-r border-border/50 bg-muted/30 p-4 space-y-1 hidden md:block">
+          {sidebarItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveSection(item.id)}
+              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                activeSection === item.id
+                  ? 'bg-primary/10 text-primary border border-primary/20'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              }`}
+            >
+              <item.icon className="w-4 h-4" />
+              {item.label}
+            </button>
+          ))}
 
-            {/* Manage Portals */}
-            <Link to="/admin/portals" className="block">
-              <div className="premium-card p-5 hover:border-primary/50 transition-all group cursor-pointer">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="icon-box">
-                      <Globe className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                        Manage Portals
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        Add, edit, delete job portals • Assign to categories (Remote, Germany, etc.)
-                      </p>
-                      <p className="text-xs text-primary mt-1">{portals.length} portals</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                </div>
-              </div>
+          <div className="pt-4 mt-4 border-t border-border/50">
+            <p className="px-4 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+              Content
+            </p>
+            <Link
+              to="/admin/companies"
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+            >
+              <Building2 className="w-4 h-4" />
+              Companies
+              <span className="ml-auto text-xs bg-muted px-2 py-0.5 rounded-full">{companies.length}</span>
+            </Link>
+            <Link
+              to="/admin/portals"
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+            >
+              <Globe className="w-4 h-4" />
+              Portals
+              <span className="ml-auto text-xs bg-muted px-2 py-0.5 rounded-full">{portals.length}</span>
             </Link>
           </div>
+        </aside>
 
-          {/* Appearance Section */}
-          <div className="space-y-4">
-            <h2 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-accent"></span>
-              Appearance
-            </h2>
+        {/* Main Content */}
+        <main className="flex-1 p-6 lg:p-8 overflow-y-auto">
+          <div className="max-w-3xl mx-auto">
 
-            {/* Site Title */}
-            <section className="premium-card p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="icon-box">
-                  <Type className="w-5 h-5 text-primary" />
-                </div>
+            {/* Mobile nav */}
+            <div className="flex gap-2 mb-6 md:hidden overflow-x-auto pb-2">
+              {sidebarItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveSection(item.id)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                    activeSection === item.id
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground'
+                  }`}
+                >
+                  <item.icon className="w-4 h-4" />
+                  {item.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Overview Section */}
+            {activeSection === 'overview' && (
+              <div className="space-y-6 animate-fade-in">
                 <div>
-                  <h3 className="font-semibold">Site Title</h3>
-                  <p className="text-sm text-muted-foreground">Change the main title displayed in the header</p>
+                  <h2 className="font-display text-2xl font-bold text-foreground mb-1">Overview</h2>
+                  <p className="text-muted-foreground">Manage all your CareerHub content from here.</p>
                 </div>
-              </div>
-              <div className="flex gap-3">
-                <Input
-                  value={siteTitle}
-                  onChange={(e) => setSiteTitle(e.target.value)}
-                  placeholder="CareerHub"
-                  className="flex-1 rounded-xl"
-                />
-                <Button onClick={handleSaveTitle} className="btn-gradient rounded-xl">
-                  Save
-                </Button>
-              </div>
-            </section>
 
-            {/* Banner Upload */}
-            <section className="premium-card p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="icon-box">
-                  <Image className="w-5 h-5 text-primary" />
+                {/* Stats Cards */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-2xl border border-border/50 bg-card p-5">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+                        <Building2 className="w-5 h-5 text-accent" />
+                      </div>
+                      <span className="text-sm font-medium text-muted-foreground">Companies</span>
+                    </div>
+                    <p className="text-3xl font-bold text-foreground">{companies.length}</p>
+                  </div>
+                  <div className="rounded-2xl border border-border/50 bg-card p-5">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Globe className="w-5 h-5 text-primary" />
+                      </div>
+                      <span className="text-sm font-medium text-muted-foreground">Portals</span>
+                    </div>
+                    <p className="text-3xl font-bold text-foreground">{portals.length}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold">Site Banner</h3>
-                  <p className="text-sm text-muted-foreground">Upload a custom banner for the hero section</p>
-                </div>
-              </div>
-              
-              {settings.bannerUrl && (
-                <div className="mb-4 relative rounded-xl overflow-hidden">
-                  <img src={settings.bannerUrl} alt="Banner" className="w-full h-32 object-cover" />
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="absolute top-2 right-2 rounded-lg"
-                    onClick={() => updateSettings({ bannerUrl: undefined })}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              )}
-              
-              <input
-                type="file"
-                ref={bannerInputRef}
-                accept="image/*"
-                onChange={handleBannerUpload}
-                className="hidden"
-              />
-              <Button variant="outline" onClick={() => bannerInputRef.current?.click()} className="rounded-xl">
-                <Upload className="w-4 h-4 mr-2" />
-                Upload Banner Image
-              </Button>
-            </section>
 
-            {/* Background Image */}
-            <section className="premium-card p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="icon-box">
-                  <Upload className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-semibold">Background Image</h3>
-                  <p className="text-sm text-muted-foreground">Upload a custom background image</p>
-                </div>
-              </div>
-              
-              {settings.backgroundUrl && (
-                <div className="mb-4 relative rounded-xl overflow-hidden">
-                  <img src={settings.backgroundUrl} alt="Background" className="w-full h-32 object-cover" />
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="absolute top-2 right-2 rounded-lg"
-                    onClick={() => updateSettings({ backgroundUrl: undefined })}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              )}
-              
-              <input
-                type="file"
-                ref={bgInputRef}
-                accept="image/*"
-                onChange={handleBackgroundUpload}
-                className="hidden"
-              />
-              <Button variant="outline" onClick={() => bgInputRef.current?.click()} className="rounded-xl">
-                <Upload className="w-4 h-4 mr-2" />
-                Upload Background Image
-              </Button>
-            </section>
+                {/* Quick Actions */}
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-foreground">Quick Actions</h3>
 
-            {/* Theme Color */}
-            <section className="premium-card p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="icon-box">
-                  <Palette className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-semibold">Theme Color</h3>
-                  <p className="text-sm text-muted-foreground">Override the primary theme color</p>
+                  <Link to="/admin/companies" className="block">
+                    <div className="rounded-2xl border border-border/40 bg-card p-5 hover:border-accent/50 transition-all group cursor-pointer">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-11 h-11 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center">
+                            <Building2 className="w-5 h-5 text-accent" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-foreground group-hover:text-accent transition-colors">
+                              Manage Companies
+                            </h4>
+                            <p className="text-sm text-muted-foreground">
+                              Add, edit, delete • Upload logos • Import CSV
+                            </p>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-accent transition-colors" />
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link to="/admin/portals" className="block">
+                    <div className="rounded-2xl border border-border/40 bg-card p-5 hover:border-primary/50 transition-all group cursor-pointer">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                            <Globe className="w-5 h-5 text-primary" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                              Manage Portals
+                            </h4>
+                            <p className="text-sm text-muted-foreground">
+                              Add portals with images • Assign to Remote, Germany, Finland, etc.
+                            </p>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                      </div>
+                    </div>
+                  </Link>
                 </div>
               </div>
-              <div className="flex gap-3 items-center">
-                <div className="relative">
+            )}
+
+            {/* Appearance Section */}
+            {activeSection === 'appearance' && (
+              <div className="space-y-6 animate-fade-in">
+                <div>
+                  <h2 className="font-display text-2xl font-bold text-foreground mb-1">Appearance</h2>
+                  <p className="text-muted-foreground">Customize how your site looks.</p>
+                </div>
+
+                {/* Site Title */}
+                <section className="rounded-2xl border border-border/40 bg-card p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <Type className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Site Title</h3>
+                      <p className="text-sm text-muted-foreground">Change the main title displayed in the header</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <Input
+                      value={siteTitle}
+                      onChange={(e) => setSiteTitle(e.target.value)}
+                      placeholder="CareerHub"
+                      className="flex-1 rounded-xl"
+                    />
+                    <Button onClick={handleSaveTitle} className="btn-gradient rounded-xl">
+                      Save
+                    </Button>
+                  </div>
+                </section>
+
+                {/* Banner Upload */}
+                <section className="rounded-2xl border border-border/40 bg-card p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <Image className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Site Banner</h3>
+                      <p className="text-sm text-muted-foreground">Upload a custom banner for the hero section</p>
+                    </div>
+                  </div>
+                  
+                  {settings.bannerUrl && (
+                    <div className="mb-4 relative rounded-xl overflow-hidden">
+                      <img src={settings.bannerUrl} alt="Banner" className="w-full h-32 object-cover" />
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-2 right-2 rounded-lg"
+                        onClick={() => updateSettings({ bannerUrl: undefined })}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
+                  
                   <input
-                    type="color"
-                    value={themeColor}
-                    onChange={(e) => setThemeColor(e.target.value)}
-                    className="w-12 h-12 rounded-lg cursor-pointer border-2 border-border"
+                    type="file"
+                    ref={bannerInputRef}
+                    accept="image/*"
+                    onChange={handleBannerUpload}
+                    className="hidden"
                   />
-                </div>
-                <Input
-                  value={themeColor}
-                  onChange={(e) => setThemeColor(e.target.value)}
-                  className="w-32 rounded-xl"
-                  placeholder="#14B8A6"
-                />
-                <Button onClick={handleSaveTheme} className="btn-gradient rounded-xl">
-                  Apply Color
-                </Button>
+                  <Button variant="outline" onClick={() => bannerInputRef.current?.click()} className="rounded-xl">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Upload Banner Image
+                  </Button>
+                </section>
+
+                {/* Background Image */}
+                <section className="rounded-2xl border border-border/40 bg-card p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <Upload className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Background Image</h3>
+                      <p className="text-sm text-muted-foreground">Upload a custom background image</p>
+                    </div>
+                  </div>
+                  
+                  {settings.backgroundUrl && (
+                    <div className="mb-4 relative rounded-xl overflow-hidden">
+                      <img src={settings.backgroundUrl} alt="Background" className="w-full h-32 object-cover" />
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-2 right-2 rounded-lg"
+                        onClick={() => updateSettings({ backgroundUrl: undefined })}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
+                  
+                  <input
+                    type="file"
+                    ref={bgInputRef}
+                    accept="image/*"
+                    onChange={handleBackgroundUpload}
+                    className="hidden"
+                  />
+                  <Button variant="outline" onClick={() => bgInputRef.current?.click()} className="rounded-xl">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Upload Background Image
+                  </Button>
+                </section>
+
+                {/* Theme Color */}
+                <section className="rounded-2xl border border-border/40 bg-card p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <Palette className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Theme Color</h3>
+                      <p className="text-sm text-muted-foreground">Override the primary theme color</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3 items-center">
+                    <div className="relative">
+                      <input
+                        type="color"
+                        value={themeColor}
+                        onChange={(e) => setThemeColor(e.target.value)}
+                        className="w-12 h-12 rounded-lg cursor-pointer border-2 border-border"
+                      />
+                    </div>
+                    <Input
+                      value={themeColor}
+                      onChange={(e) => setThemeColor(e.target.value)}
+                      className="w-32 rounded-xl"
+                      placeholder="#14B8A6"
+                    />
+                    <Button onClick={handleSaveTheme} className="btn-gradient rounded-xl">
+                      Apply Color
+                    </Button>
+                  </div>
+                </section>
               </div>
-            </section>
-          </div>
+            )}
 
-          {/* Data Management Section */}
-          <div className="space-y-4">
-            <h2 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-destructive"></span>
-              Data Management
-            </h2>
-
-            <section className="premium-card p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="icon-box">
-                  <Download className="w-5 h-5 text-primary" />
-                </div>
+            {/* Data Management Section */}
+            {activeSection === 'data' && (
+              <div className="space-y-6 animate-fade-in">
                 <div>
-                  <h3 className="font-semibold">Backup & Reset</h3>
-                  <p className="text-sm text-muted-foreground">Export backup or reset all data</p>
+                  <h2 className="font-display text-2xl font-bold text-foreground mb-1">Data & Backup</h2>
+                  <p className="text-muted-foreground">Export, backup, or reset your data.</p>
                 </div>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-muted/50">
-                  <div className="text-sm text-muted-foreground mb-3">
-                    <strong>Current Data:</strong> {companies.length} companies, {portals.length} portals
+
+                <section className="rounded-2xl border border-border/40 bg-card p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <Download className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Export Backup</h3>
+                      <p className="text-sm text-muted-foreground">Download all your data as JSON</p>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 rounded-xl bg-muted/50 mb-4">
+                    <div className="text-sm text-muted-foreground">
+                      <strong>Current Data:</strong> {companies.length} companies, {portals.length} portals
+                    </div>
                   </div>
                   <Button variant="outline" onClick={handleExportAll} className="rounded-xl">
                     <Download className="w-4 h-4 mr-2" />
                     Export Full Backup
                   </Button>
-                </div>
-                
-                <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20">
-                  <p className="text-sm text-destructive mb-3">
-                    <strong>Danger Zone:</strong> Reset all data including companies, portals, and settings.
-                  </p>
+                </section>
+
+                <section className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center">
+                      <Trash2 className="w-5 h-5 text-destructive" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-destructive">Danger Zone</h3>
+                      <p className="text-sm text-muted-foreground">Reset all data including companies, portals, and settings</p>
+                    </div>
+                  </div>
                   <Button variant="destructive" onClick={handleResetAll} className="rounded-xl">
                     <RotateCcw className="w-4 h-4 mr-2" />
                     Reset All Data
                   </Button>
-                </div>
+                </section>
               </div>
-            </section>
-          </div>
+            )}
 
-        </div>
-      </main>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

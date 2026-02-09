@@ -71,6 +71,7 @@ export default function Portals() {
                 name={portal.name}
                 category={portal.category}
                 icon={portal.icon}
+                imageUrl={portal.imageUrl}
                 onOpen={() => handleOpen(portal.url)}
               />
             ))}

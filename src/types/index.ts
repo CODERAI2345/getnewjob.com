@@ -7,6 +7,7 @@ export interface Portal {
   category: string;
   region?: PortalRegion;
   icon?: string;
+  imageUrl?: string;
   isFavorite: boolean;
   createdAt: string;
   updatedAt: string;

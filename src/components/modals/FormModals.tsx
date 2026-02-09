@@ -39,6 +39,7 @@ export function PortalModal({ isOpen, onClose, onSave, portal }: PortalModalProp
   const [url, setUrl] = useState(portal?.url || '');
   const [category, setCategory] = useState(portal?.category || '');
   const [icon, setIcon] = useState(portal?.icon || '');
+  const [imageUrl, setImageUrl] = useState(portal?.imageUrl || '');
 
   useEffect(() => {
     if (portal) {
@@ -46,11 +47,13 @@ export function PortalModal({ isOpen, onClose, onSave, portal }: PortalModalProp
       setUrl(portal.url);
       setCategory(portal.category);
       setIcon(portal.icon || '');
+      setImageUrl(portal.imageUrl || '');
     } else {
       setName('');
       setUrl('');
       setCategory('');
       setIcon('');
+      setImageUrl('');
     }
   }, [portal, isOpen]);
 
@@ -60,8 +63,19 @@ export function PortalModal({ isOpen, onClose, onSave, portal }: PortalModalProp
     e.preventDefault();
     if (!name || !url || !category) return;
 
-    onSave({ name, url, category, icon });
+    onSave({ name, url, category, icon, imageUrl: imageUrl || undefined });
     onClose();
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -131,6 +145,46 @@ export function PortalModal({ isOpen, onClose, onSave, portal }: PortalModalProp
               className="mt-1.5 rounded-xl"
               maxLength={2}
             />
+          </div>
+
+          {/* Image Upload */}
+          <div>
+            <Label className="flex items-center gap-2">
+              <Image className="w-4 h-4 text-primary" />
+              Portal Image
+            </Label>
+            <div className="mt-1.5 flex items-center gap-4">
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="flex-1 rounded-xl"
+              />
+              <span className="text-sm text-muted-foreground">or</span>
+              <Input
+                type="url"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                placeholder="Image URL"
+                className="flex-1 rounded-xl"
+              />
+            </div>
+            {imageUrl && (
+              <div className="mt-3 flex items-center gap-3">
+                <div className="w-16 h-16 rounded-xl border border-border overflow-hidden bg-muted flex items-center justify-center">
+                  <img src={imageUrl} alt="Portal preview" className="w-full h-full object-contain" />
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setImageUrl('')}
+                  className="rounded-xl"
+                >
+                  Remove
+                </Button>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3 pt-4">
