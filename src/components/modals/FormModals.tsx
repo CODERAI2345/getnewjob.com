@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { X, Image } from 'lucide-react';
+import { X, Image, Loader2 } from 'lucide-react';
+import { uploadImage } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -57,6 +58,8 @@ export function PortalModal({ isOpen, onClose, onSave, portal }: PortalModalProp
     }
   }, [portal, isOpen]);
 
+  const [uploading, setUploading] = useState(false);
+
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -67,14 +70,13 @@ export function PortalModal({ isOpen, onClose, onSave, portal }: PortalModalProp
     onClose();
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImageUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      setUploading(true);
+      const url = await uploadImage(file, 'portals');
+      if (url) setImageUrl(url);
+      setUploading(false);
     }
   };
 
@@ -290,6 +292,8 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
     }
   }, [company, isOpen]);
 
+  const [logoUploading, setLogoUploading] = useState(false);
+
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -314,14 +318,13 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        updateField('logoUrl', reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      setLogoUploading(true);
+      const url = await uploadImage(file, 'logos');
+      if (url) updateField('logoUrl', url);
+      setLogoUploading(false);
     }
   };
 

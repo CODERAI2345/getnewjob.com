@@ -6,7 +6,7 @@ import { ImportResult, Company } from '@/types';
 interface ImportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onImport: (data: Partial<Company>[]) => ImportResult;
+  onImport: (data: Partial<Company>[]) => ImportResult | Promise<ImportResult>;
 }
 
 export function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
@@ -173,7 +173,7 @@ export function ImportModal({ isOpen, onClose, onImport }: ImportModalProps) {
     try {
       const text = await file.text();
       const data = parseCSV(text);
-      const importResult = onImport(data);
+      const importResult = await onImport(data);
       setResult(importResult);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to parse CSV file');

@@ -14,7 +14,132 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      companies: {
+        Row: {
+          about: string | null
+          application_status: string | null
+          applied_date: string | null
+          brand_title_html: string | null
+          career_url: string
+          collection_ids: string[] | null
+          company_size: string | null
+          created_at: string
+          description: string | null
+          founded_year: number | null
+          hq: string | null
+          hq_city: string | null
+          hq_country: string | null
+          hr_contact: string | null
+          id: string
+          industry: string | null
+          is_favorite: boolean
+          is_pinned: boolean
+          linkedin_url: string | null
+          location: string | null
+          logo_url: string | null
+          name: string
+          notes: string | null
+          technologies: string[] | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          about?: string | null
+          application_status?: string | null
+          applied_date?: string | null
+          brand_title_html?: string | null
+          career_url?: string
+          collection_ids?: string[] | null
+          company_size?: string | null
+          created_at?: string
+          description?: string | null
+          founded_year?: number | null
+          hq?: string | null
+          hq_city?: string | null
+          hq_country?: string | null
+          hr_contact?: string | null
+          id?: string
+          industry?: string | null
+          is_favorite?: boolean
+          is_pinned?: boolean
+          linkedin_url?: string | null
+          location?: string | null
+          logo_url?: string | null
+          name: string
+          notes?: string | null
+          technologies?: string[] | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          about?: string | null
+          application_status?: string | null
+          applied_date?: string | null
+          brand_title_html?: string | null
+          career_url?: string
+          collection_ids?: string[] | null
+          company_size?: string | null
+          created_at?: string
+          description?: string | null
+          founded_year?: number | null
+          hq?: string | null
+          hq_city?: string | null
+          hq_country?: string | null
+          hr_contact?: string | null
+          id?: string
+          industry?: string | null
+          is_favorite?: boolean
+          is_pinned?: boolean
+          linkedin_url?: string | null
+          location?: string | null
+          logo_url?: string | null
+          name?: string
+          notes?: string | null
+          technologies?: string[] | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      portals: {
+        Row: {
+          category: string
+          created_at: string
+          icon: string | null
+          id: string
+          image_url: string | null
+          is_favorite: boolean
+          name: string
+          region: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          icon?: string | null
+          id?: string
+          image_url?: string | null
+          is_favorite?: boolean
+          name: string
+          region?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          icon?: string | null
+          id?: string
+          image_url?: string | null
+          is_favorite?: boolean
+          name?: string
+          region?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
