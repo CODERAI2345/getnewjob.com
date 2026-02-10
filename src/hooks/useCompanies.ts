@@ -1,53 +1,141 @@
-import { useCallback } from 'react';
-import { useLocalStorage } from './useLocalStorage';
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { Company, ImportResult } from '@/types';
 
-const COMPANIES_KEY = 'careerhub_companies';
+function mapRow(c: any): Company {
+  return {
+    id: c.id,
+    name: c.name,
+    brandTitleHtml: c.brand_title_html,
+    logoUrl: c.logo_url,
+    careerUrl: c.career_url,
+    website: c.website,
+    linkedinUrl: c.linkedin_url,
+    foundedYear: c.founded_year,
+    hqCity: c.hq_city,
+    hqCountry: c.hq_country,
+    hq: c.hq,
+    location: c.location,
+    industry: c.industry,
+    companySize: c.company_size,
+    technologies: c.technologies,
+    description: c.description,
+    about: c.about,
+    notes: c.notes,
+    isFavorite: c.is_favorite,
+    isPinned: c.is_pinned,
+    applicationStatus: c.application_status,
+    appliedDate: c.applied_date,
+    hrContact: c.hr_contact,
+    collectionIds: c.collection_ids,
+    createdAt: c.created_at,
+    updatedAt: c.updated_at,
+  };
+}
+
+function toDbRow(data: Partial<Company>): any {
+  const row: any = {};
+  if (data.name !== undefined) row.name = data.name;
+  if (data.brandTitleHtml !== undefined) row.brand_title_html = data.brandTitleHtml;
+  if (data.logoUrl !== undefined) row.logo_url = data.logoUrl;
+  if (data.careerUrl !== undefined) row.career_url = data.careerUrl;
+  if (data.website !== undefined) row.website = data.website;
+  if (data.linkedinUrl !== undefined) row.linkedin_url = data.linkedinUrl;
+  if (data.foundedYear !== undefined) row.founded_year = data.foundedYear;
+  if (data.hqCity !== undefined) row.hq_city = data.hqCity;
+  if (data.hqCountry !== undefined) row.hq_country = data.hqCountry;
+  if (data.hq !== undefined) row.hq = data.hq;
+  if (data.location !== undefined) row.location = data.location;
+  if (data.industry !== undefined) row.industry = data.industry;
+  if (data.companySize !== undefined) row.company_size = data.companySize;
+  if (data.technologies !== undefined) row.technologies = data.technologies;
+  if (data.description !== undefined) row.description = data.description;
+  if (data.about !== undefined) row.about = data.about;
+  if (data.notes !== undefined) row.notes = data.notes;
+  if (data.isFavorite !== undefined) row.is_favorite = data.isFavorite;
+  if (data.isPinned !== undefined) row.is_pinned = data.isPinned;
+  if (data.applicationStatus !== undefined) row.application_status = data.applicationStatus;
+  if (data.appliedDate !== undefined) row.applied_date = data.appliedDate;
+  if (data.hrContact !== undefined) row.hr_contact = data.hrContact;
+  if (data.collectionIds !== undefined) row.collection_ids = data.collectionIds;
+  return row;
+}
 
 export function useCompanies() {
-  const [companies, setCompanies] = useLocalStorage<Company[]>(COMPANIES_KEY, []);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const addCompany = useCallback((company: Omit<Company, 'id' | 'createdAt' | 'updatedAt' | 'isFavorite' | 'isPinned'>) => {
-    const newCompany: Company = {
-      ...company,
-      id: crypto.randomUUID(),
-      isFavorite: false,
-      isPinned: false,
-      applicationStatus: 'not_applied',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    setCompanies((prev) => [...prev, newCompany]);
-    return newCompany;
-  }, [setCompanies]);
+  const fetchCompanies = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('companies')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  const updateCompany = useCallback((id: string, updates: Partial<Company>) => {
-    setCompanies((prev) =>
-      prev.map((c) =>
-        c.id === id ? { ...c, ...updates, updatedAt: new Date().toISOString() } : c
-      )
-    );
-  }, [setCompanies]);
+    if (error) {
+      console.error('Error fetching companies:', error);
+      return;
+    }
 
-  const deleteCompany = useCallback((id: string) => {
-    setCompanies((prev) => prev.filter((c) => c.id !== id));
-  }, [setCompanies]);
+    setCompanies((data || []).map(mapRow));
+    setLoading(false);
+  }, []);
 
-  const toggleFavorite = useCallback((id: string) => {
-    setCompanies((prev) =>
-      prev.map((c) =>
-        c.id === id ? { ...c, isFavorite: !c.isFavorite, updatedAt: new Date().toISOString() } : c
-      )
-    );
-  }, [setCompanies]);
+  useEffect(() => {
+    fetchCompanies();
+  }, [fetchCompanies]);
 
-  const togglePinned = useCallback((id: string) => {
-    setCompanies((prev) =>
-      prev.map((c) =>
-        c.id === id ? { ...c, isPinned: !c.isPinned, updatedAt: new Date().toISOString() } : c
-      )
-    );
-  }, [setCompanies]);
+  const addCompany = useCallback(async (company: Omit<Company, 'id' | 'createdAt' | 'updatedAt' | 'isFavorite' | 'isPinned'>) => {
+    const row = toDbRow(company);
+    row.is_favorite = false;
+    row.is_pinned = false;
+    row.application_status = 'not_applied';
+
+    const { error } = await supabase.from('companies').insert(row);
+
+    if (error) {
+      console.error('Error adding company:', error);
+      return null;
+    }
+
+    await fetchCompanies();
+  }, [fetchCompanies]);
+
+  const updateCompany = useCallback(async (id: string, updates: Partial<Company>) => {
+    const row = toDbRow(updates);
+    row.updated_at = new Date().toISOString();
+
+    const { error } = await supabase.from('companies').update(row).eq('id', id);
+
+    if (error) {
+      console.error('Error updating company:', error);
+      return;
+    }
+
+    await fetchCompanies();
+  }, [fetchCompanies]);
+
+  const deleteCompany = useCallback(async (id: string) => {
+    const { error } = await supabase.from('companies').delete().eq('id', id);
+
+    if (error) {
+      console.error('Error deleting company:', error);
+      return;
+    }
+
+    await fetchCompanies();
+  }, [fetchCompanies]);
+
+  const toggleFavorite = useCallback(async (id: string) => {
+    const company = companies.find((c) => c.id === id);
+    if (!company) return;
+    await updateCompany(id, { isFavorite: !company.isFavorite });
+  }, [companies, updateCompany]);
+
+  const togglePinned = useCallback(async (id: string) => {
+    const company = companies.find((c) => c.id === id);
+    if (!company) return;
+    await updateCompany(id, { isPinned: !company.isPinned });
+  }, [companies, updateCompany]);
 
   const getCompanyById = useCallback((id: string) => {
     return companies.find((c) => c.id === id);
@@ -61,7 +149,7 @@ export function useCompanies() {
     return companies.filter((c) => c.isPinned);
   }, [companies]);
 
-  const importCompanies = useCallback((data: Partial<Company>[]): ImportResult => {
+  const importCompanies = useCallback(async (data: Partial<Company>[]): Promise<ImportResult> => {
     const result: ImportResult = {
       total: data.length,
       added: 0,
@@ -69,59 +157,62 @@ export function useCompanies() {
       errors: [],
     };
 
-    const newCompanies: Company[] = [];
+    const rows: any[] = [];
 
-    data.forEach((row, index) => {
-      // Validate required fields - only company name is required now
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i];
       if (!row.name) {
-        result.errors.push(`Row ${index + 1}: Missing required field (Company Name)`);
-        return;
+        result.errors.push(`Row ${i + 1}: Missing required field (Company Name)`);
+        continue;
       }
 
-      // Check for duplicates by company name (case-insensitive)
       const isDuplicate = companies.some(
         (c) => c.name.toLowerCase() === row.name!.toLowerCase()
       );
 
       if (isDuplicate) {
         result.skipped++;
-        return;
+        continue;
       }
 
-      newCompanies.push({
-        id: crypto.randomUUID(),
+      rows.push({
         name: row.name,
-        brandTitleHtml: row.brandTitleHtml,
-        logoUrl: row.logoUrl,
-        careerUrl: row.careerUrl || row.website || '#',
+        brand_title_html: row.brandTitleHtml,
+        logo_url: row.logoUrl,
+        career_url: row.careerUrl || row.website || '#',
         website: row.website,
-        linkedinUrl: row.linkedinUrl,
-        foundedYear: row.foundedYear,
-        hqCity: row.hqCity || row.location,
-        hqCountry: row.hqCountry || row.hq,
+        linkedin_url: row.linkedinUrl,
+        founded_year: row.foundedYear,
+        hq_city: row.hqCity || row.location,
+        hq_country: row.hqCountry || row.hq,
         hq: row.hq,
         location: row.location,
         industry: row.industry,
-        companySize: row.companySize,
+        company_size: row.companySize,
         technologies: row.technologies,
         description: row.description || row.about,
         about: row.about,
         notes: row.notes,
-        isFavorite: false,
-        isPinned: false,
-        applicationStatus: 'not_applied',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        is_favorite: false,
+        is_pinned: false,
+        application_status: 'not_applied',
       });
       result.added++;
-    });
+    }
 
-    if (newCompanies.length > 0) {
-      setCompanies((prev) => [...prev, ...newCompanies]);
+    if (rows.length > 0) {
+      const { error } = await supabase.from('companies').insert(rows);
+      if (error) {
+        console.error('Error importing companies:', error);
+        result.errors.push('Database error during import');
+        result.added = 0;
+      } else {
+        await fetchCompanies();
+      }
     }
 
     return result;
-  }, [companies, setCompanies]);
+  }, [companies, fetchCompanies]);
 
   const exportCompanies = useCallback(() => {
     return companies;
@@ -129,6 +220,7 @@ export function useCompanies() {
 
   return {
     companies,
+    loading,
     addCompany,
     updateCompany,
     deleteCompany,
