@@ -111,15 +111,20 @@ export function CompanyCard({
           <Pin className="w-3 h-3" />
         </div>
       )}
-      
-      <div className="flex items-start justify-between mb-3">
-        <div className="icon-box icon-box-primary overflow-hidden">
-          {logoUrl ? (
-            <img src={logoUrl} alt={name} className="w-full h-full object-contain" />
-          ) : (
-            <span className="font-bold text-lg">{name.charAt(0)}</span>
-          )}
+
+      {/* Banner logo */}
+      {logoUrl ? (
+        <div className="w-full h-36 -mt-6 -mx-6 mb-4 overflow-hidden bg-muted/30 flex items-center justify-center" style={{ width: 'calc(100% + 3rem)' }}>
+          <img src={logoUrl} alt={name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         </div>
+      ) : (
+        <div className="w-full h-36 -mt-6 -mx-6 mb-4 overflow-hidden bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center" style={{ width: 'calc(100% + 3rem)' }}>
+          <span className="text-5xl font-bold text-primary/40">{name.charAt(0)}</span>
+        </div>
+      )}
+
+      <div className="flex items-start justify-between mb-1">
+        <div className="flex-1" />
         <ArrowRight className="w-5 h-5 text-muted-foreground arrow-slide" />
       </div>
 
