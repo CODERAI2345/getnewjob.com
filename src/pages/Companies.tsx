@@ -189,107 +189,113 @@ export default function Companies() {
 
         {/* Companies grid */}
         {filteredAndSortedCompanies.length > 0 ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 stagger-animate">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 stagger-animate">
             {filteredAndSortedCompanies.map((company) => (
               <div
                 key={company.id}
                 onClick={() => navigate(`/company/${company.id}`)}
-                className="group relative cursor-pointer rounded-2xl border border-border/40 bg-card overflow-hidden transition-all duration-400 hover:shadow-lg hover:shadow-accent/10 hover:border-accent/40 hover:-translate-y-1"
+                className="group relative cursor-pointer rounded-2xl border border-border/40 bg-card overflow-hidden transition-all duration-500 hover:shadow-xl hover:shadow-accent/10 hover:border-accent/30 hover:-translate-y-2"
               >
-                {/* Accent top bar */}
-                <div className="h-1.5 w-full bg-gradient-to-r from-accent via-primary to-accent opacity-60 group-hover:opacity-100 transition-opacity" />
-
+                {/* Pinned badge */}
                 {company.isPinned && (
-                  <div className="absolute top-3 right-3 z-10">
-                    <div className="w-6 h-6 rounded-full bg-accent/90 flex items-center justify-center shadow-md">
-                      <Pin className="w-3 h-3 text-accent-foreground fill-current" />
+                  <div className="absolute top-4 right-4 z-10">
+                    <div className="w-7 h-7 rounded-full bg-accent/90 flex items-center justify-center shadow-lg shadow-accent/30">
+                      <Pin className="w-3.5 h-3.5 text-accent-foreground fill-current" />
                     </div>
                   </div>
                 )}
 
-                <div className="p-5">
-                  {/* Logo + Name */}
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-muted/80 border border-border/60 flex items-center justify-center overflow-hidden flex-shrink-0">
-                      {company.logoUrl ? (
-                        <>
-                          <img
-                            src={company.logoUrl}
-                            alt=""
-                            className="w-full h-full object-contain"
-                            onError={(e) => {
-                              e.currentTarget.style.display = 'none';
-                              const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                              if (fallback) fallback.style.display = 'flex';
-                            }}
-                          />
-                          <span className="text-accent font-bold text-lg" style={{ display: 'none' }}>{company.name.charAt(0)}</span>
-                        </>
-                      ) : (
-                        <span className="text-accent font-bold text-lg">{company.name.charAt(0)}</span>
-                      )}
+                {/* Banner area */}
+                <div className="relative w-full h-44 overflow-hidden">
+                  {company.logoUrl ? (
+                    <>
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20" />
+                      <img
+                        src={company.logoUrl}
+                        alt={company.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.parentElement?.querySelector('.logo-fallback') as HTMLElement;
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
+                      />
+                      <div className="logo-fallback absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/20 to-primary/10 items-center justify-center" style={{ display: 'none' }}>
+                        <span className="text-6xl font-bold text-primary/50 font-display">{company.name.charAt(0)}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/25 via-accent/15 to-primary/5 flex items-center justify-center">
+                      <span className="text-6xl font-bold text-primary/40 font-display">{company.name.charAt(0)}</span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      {company.brandTitleHtml ? (
-                        <h3
-                          className="font-semibold text-base text-foreground group-hover:text-accent transition-colors truncate"
-                          dangerouslySetInnerHTML={{ __html: company.brandTitleHtml }}
-                        />
-                      ) : (
-                        <h3 className="font-semibold text-base text-foreground group-hover:text-accent transition-colors truncate">
-                          {company.name}
-                        </h3>
-                      )}
-                      {(company.hqCity || company.hqCountry) && (
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {[company.hqCity, company.hqCountry].filter(Boolean).join(', ')}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                  )}
+                  {/* Bottom gradient overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-card to-transparent" />
+                </div>
+
+                {/* Content */}
+                <div className="p-5 -mt-4 relative">
+                  {/* Company name */}
+                  {company.brandTitleHtml ? (
+                    <h3
+                      className="font-display font-bold text-lg text-foreground group-hover:text-accent transition-colors mb-1"
+                      dangerouslySetInnerHTML={{ __html: company.brandTitleHtml }}
+                    />
+                  ) : (
+                    <h3 className="font-display font-bold text-lg text-foreground group-hover:text-accent transition-colors mb-1">
+                      {company.name}
+                    </h3>
+                  )}
+
+                  {/* Location */}
+                  {(company.hqCity || company.hqCountry) && (
+                    <p className="text-sm text-muted-foreground mb-3">
+                      📍 {[company.hqCity, company.hqCountry].filter(Boolean).join(', ')}
+                    </p>
+                  )}
 
                   {/* Tags */}
                   <div className="flex flex-wrap gap-1.5 mb-3">
                     {company.industry && (
-                      <span className="px-2.5 py-0.5 rounded-md text-xs font-medium bg-accent/10 text-accent border border-accent/20">
+                      <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-accent/10 text-accent border border-accent/20">
                         {company.industry}
                       </span>
                     )}
                     {company.companySize && (
-                      <span className="px-2.5 py-0.5 rounded-md text-xs font-medium bg-muted text-muted-foreground">
-                        {company.companySize}
+                      <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-muted text-muted-foreground">
+                        👥 {company.companySize}
                       </span>
                     )}
                   </div>
 
                   {/* Technologies */}
                   {company.technologies && company.technologies.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-3">
-                      {company.technologies.slice(0, 3).map((tech) => (
+                    <div className="flex flex-wrap gap-1.5 mb-4">
+                      {company.technologies.slice(0, 4).map((tech) => (
                         <span
                           key={tech}
-                          className="px-2 py-0.5 rounded text-xs font-medium bg-primary/8 text-primary"
+                          className="px-2 py-0.5 rounded-md text-xs font-medium bg-primary/8 text-primary border border-primary/10"
                         >
                           {tech}
                         </span>
                       ))}
-                      {company.technologies.length > 3 && (
-                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-muted text-muted-foreground">
-                          +{company.technologies.length - 3}
+                      {company.technologies.length > 4 && (
+                        <span className="px-2 py-0.5 rounded-md text-xs font-medium bg-muted text-muted-foreground">
+                          +{company.technologies.length - 4}
                         </span>
                       )}
                     </div>
                   )}
 
-                  {/* Pin button */}
-                  <div className="flex items-center pt-3 border-t border-border/40" onClick={(e) => e.stopPropagation()}>
+                  {/* Pin action */}
+                  <div className="flex items-center pt-3 border-t border-border/30" onClick={(e) => e.stopPropagation()}>
                     <button
                       onClick={() => togglePinned(company.id)}
                       className={cn(
-                        "p-1.5 rounded-lg text-xs font-medium flex items-center gap-1 transition-all",
+                        "p-2 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all duration-300",
                         company.isPinned
                           ? "text-accent bg-accent/10 hover:bg-accent/20"
-                          : "text-muted-foreground hover:text-accent hover:bg-muted"
+                          : "text-muted-foreground hover:text-accent hover:bg-accent/5"
                       )}
                     >
                       <Pin className={cn("w-3.5 h-3.5", company.isPinned && "fill-current")} />
