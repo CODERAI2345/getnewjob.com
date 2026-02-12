@@ -221,8 +221,15 @@ export default function Companies() {
                   </div>
                 </div>
 
-                {/* Dark gradient overlay from bottom */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                {/* Dark gradient overlay from bottom - uses brand color if available */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: company.brandColor
+                      ? `linear-gradient(to top, ${company.brandColor}ee, ${company.brandColor}66, transparent)`
+                      : 'linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.4), transparent)',
+                  }}
+                />
 
                 {/* Pinned badge */}
                 {company.isPinned && (
@@ -277,7 +284,11 @@ export default function Companies() {
 
                   {/* CTA Button */}
                   <button
-                    className="mt-1 w-full py-2.5 rounded-xl bg-white text-foreground font-semibold text-sm hover:bg-white/90 transition-colors shadow-lg"
+                    className="mt-1 w-full py-2.5 rounded-xl font-semibold text-sm transition-colors shadow-lg"
+                    style={{
+                      backgroundColor: company.brandColor || 'white',
+                      color: company.brandColor ? 'white' : 'hsl(var(--foreground))',
+                    }}
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/company/${company.id}`);

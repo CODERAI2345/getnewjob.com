@@ -252,6 +252,7 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
     technologies: '',
     description: '',
     notes: '',
+    brandColor: '',
   });
 
   useEffect(() => {
@@ -271,6 +272,7 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
         technologies: company.technologies?.join(', ') || '',
         description: company.description || '',
         notes: company.notes || '',
+        brandColor: company.brandColor || '',
       });
     } else {
       setFormData({
@@ -288,6 +290,7 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
         technologies: '',
         description: '',
         notes: '',
+        brandColor: '',
       });
     }
   }, [company, isOpen]);
@@ -304,6 +307,7 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
       ...formData,
       brandTitleHtml: formData.brandTitleHtml || undefined,
       logoUrl: formData.logoUrl || undefined,
+      brandColor: formData.brandColor || undefined,
       careerUrl: formData.careerUrl || formData.website || '#',
       website: formData.website || undefined,
       foundedYear: formData.foundedYear ? parseInt(formData.foundedYear) : undefined,
@@ -542,6 +546,38 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
               className="mt-1.5 rounded-xl"
               rows={3}
             />
+          </div>
+
+          {/* Brand Color */}
+          <div>
+            <Label htmlFor="brandColor" className="flex items-center gap-2">
+              Brand Color
+              {formData.brandColor && (
+                <span className="w-5 h-5 rounded-full border border-border inline-block" style={{ backgroundColor: formData.brandColor }} />
+              )}
+            </Label>
+            <div className="mt-1.5 flex items-center gap-3">
+              <Input
+                id="brandColor"
+                type="color"
+                value={formData.brandColor || '#000000'}
+                onChange={(e) => updateField('brandColor', e.target.value)}
+                className="w-14 h-10 p-1 rounded-xl cursor-pointer"
+              />
+              <Input
+                type="text"
+                value={formData.brandColor}
+                onChange={(e) => updateField('brandColor', e.target.value)}
+                placeholder="#FF5733 or rgb(255,87,51)"
+                className="flex-1 rounded-xl"
+              />
+              {formData.brandColor && (
+                <Button type="button" variant="outline" size="sm" onClick={() => updateField('brandColor', '')} className="rounded-xl">
+                  Clear
+                </Button>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">Used as the card overlay color and button accent on the Companies page.</p>
           </div>
 
           <div>

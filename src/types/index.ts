@@ -32,6 +32,7 @@ export interface Company {
   description?: string;
   about?: string;
   notes?: string;
+  brandColor?: string;
   isFavorite: boolean;
   isPinned: boolean;
   applicationStatus?: ApplicationStatus;
