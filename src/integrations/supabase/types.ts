@@ -19,6 +19,7 @@ export type Database = {
           about: string | null
           application_status: string | null
           applied_date: string | null
+          brand_color: string | null
           brand_title_html: string | null
           career_url: string
           collection_ids: string[] | null
@@ -47,6 +48,7 @@ export type Database = {
           about?: string | null
           application_status?: string | null
           applied_date?: string | null
+          brand_color?: string | null
           brand_title_html?: string | null
           career_url?: string
           collection_ids?: string[] | null
@@ -75,6 +77,7 @@ export type Database = {
           about?: string | null
           application_status?: string | null
           applied_date?: string | null
+          brand_color?: string | null
           brand_title_html?: string | null
           career_url?: string
           collection_ids?: string[] | null

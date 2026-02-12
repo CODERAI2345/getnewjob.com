@@ -22,6 +22,7 @@ function mapRow(c: any): Company {
     description: c.description,
     about: c.about,
     notes: c.notes,
+    brandColor: c.brand_color,
     isFavorite: c.is_favorite,
     isPinned: c.is_pinned,
     applicationStatus: c.application_status,
@@ -52,6 +53,7 @@ function toDbRow(data: Partial<Company>): any {
   if (data.description !== undefined) row.description = data.description;
   if (data.about !== undefined) row.about = data.about;
   if (data.notes !== undefined) row.notes = data.notes;
+  if (data.brandColor !== undefined) row.brand_color = data.brandColor;
   if (data.isFavorite !== undefined) row.is_favorite = data.isFavorite;
   if (data.isPinned !== undefined) row.is_pinned = data.isPinned;
   if (data.applicationStatus !== undefined) row.application_status = data.applicationStatus;
