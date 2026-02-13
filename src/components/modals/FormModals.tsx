@@ -253,6 +253,12 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
     description: '',
     notes: '',
     brandColor: '',
+    gradientColor1: '',
+    gradientColor2: '',
+    gradientAngle: '180',
+    buttonGradientColor1: '',
+    buttonGradientColor2: '',
+    buttonGradientAngle: '90',
   });
 
   useEffect(() => {
@@ -273,6 +279,12 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
         description: company.description || '',
         notes: company.notes || '',
         brandColor: company.brandColor || '',
+        gradientColor1: company.gradientColor1 || '',
+        gradientColor2: company.gradientColor2 || '',
+        gradientAngle: company.gradientAngle?.toString() || '180',
+        buttonGradientColor1: company.buttonGradientColor1 || '',
+        buttonGradientColor2: company.buttonGradientColor2 || '',
+        buttonGradientAngle: company.buttonGradientAngle?.toString() || '90',
       });
     } else {
       setFormData({
@@ -291,6 +303,12 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
         description: '',
         notes: '',
         brandColor: '',
+        gradientColor1: '',
+        gradientColor2: '',
+        gradientAngle: '180',
+        buttonGradientColor1: '',
+        buttonGradientColor2: '',
+        buttonGradientAngle: '90',
       });
     }
   }, [company, isOpen]);
@@ -308,6 +326,12 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
       brandTitleHtml: formData.brandTitleHtml || undefined,
       logoUrl: formData.logoUrl || undefined,
       brandColor: formData.brandColor || undefined,
+      gradientColor1: formData.gradientColor1 || undefined,
+      gradientColor2: formData.gradientColor2 || undefined,
+      gradientAngle: formData.gradientAngle ? parseInt(formData.gradientAngle) : 180,
+      buttonGradientColor1: formData.buttonGradientColor1 || undefined,
+      buttonGradientColor2: formData.buttonGradientColor2 || undefined,
+      buttonGradientAngle: formData.buttonGradientAngle ? parseInt(formData.buttonGradientAngle) : 90,
       careerUrl: formData.careerUrl || formData.website || '#',
       website: formData.website || undefined,
       foundedYear: formData.foundedYear ? parseInt(formData.foundedYear) : undefined,
@@ -551,33 +575,80 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
           {/* Brand Color */}
           <div>
             <Label htmlFor="brandColor" className="flex items-center gap-2">
-              Brand Color
+              Brand Color (fallback)
               {formData.brandColor && (
                 <span className="w-5 h-5 rounded-full border border-border inline-block" style={{ backgroundColor: formData.brandColor }} />
               )}
             </Label>
             <div className="mt-1.5 flex items-center gap-3">
-              <Input
-                id="brandColor"
-                type="color"
-                value={formData.brandColor || '#000000'}
-                onChange={(e) => updateField('brandColor', e.target.value)}
-                className="w-14 h-10 p-1 rounded-xl cursor-pointer"
-              />
-              <Input
-                type="text"
-                value={formData.brandColor}
-                onChange={(e) => updateField('brandColor', e.target.value)}
-                placeholder="#FF5733 or rgb(255,87,51)"
-                className="flex-1 rounded-xl"
-              />
-              {formData.brandColor && (
-                <Button type="button" variant="outline" size="sm" onClick={() => updateField('brandColor', '')} className="rounded-xl">
-                  Clear
-                </Button>
-              )}
+              <Input id="brandColor" type="color" value={formData.brandColor || '#000000'} onChange={(e) => updateField('brandColor', e.target.value)} className="w-14 h-10 p-1 rounded-xl cursor-pointer" />
+              <Input type="text" value={formData.brandColor} onChange={(e) => updateField('brandColor', e.target.value)} placeholder="#FF5733" className="flex-1 rounded-xl" />
+              {formData.brandColor && <Button type="button" variant="outline" size="sm" onClick={() => updateField('brandColor', '')} className="rounded-xl">Clear</Button>}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">Used as the card overlay color and button accent on the Companies page.</p>
+          </div>
+
+          {/* Card Gradient */}
+          <div className="bg-muted/30 rounded-xl p-4 space-y-3 border border-border/50">
+            <Label className="text-sm font-semibold">Card Overlay Gradient</Label>
+            <p className="text-xs text-muted-foreground">Mix two colors with an angle for the card background overlay.</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs text-muted-foreground">Color 1</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <Input type="color" value={formData.gradientColor1 || '#000000'} onChange={(e) => updateField('gradientColor1', e.target.value)} className="w-10 h-8 p-0.5 rounded-lg cursor-pointer" />
+                  <Input type="text" value={formData.gradientColor1} onChange={(e) => updateField('gradientColor1', e.target.value)} placeholder="#000000" className="flex-1 rounded-lg text-xs" />
+                </div>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Color 2</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <Input type="color" value={formData.gradientColor2 || '#000000'} onChange={(e) => updateField('gradientColor2', e.target.value)} className="w-10 h-8 p-0.5 rounded-lg cursor-pointer" />
+                  <Input type="text" value={formData.gradientColor2} onChange={(e) => updateField('gradientColor2', e.target.value)} placeholder="#333333" className="flex-1 rounded-lg text-xs" />
+                </div>
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">Angle ({formData.gradientAngle}°)</Label>
+              <Input type="range" min="0" max="360" value={formData.gradientAngle} onChange={(e) => updateField('gradientAngle', e.target.value)} className="mt-1" />
+            </div>
+            {formData.gradientColor1 && formData.gradientColor2 && (
+              <div className="h-8 rounded-lg border border-border" style={{ background: `linear-gradient(${formData.gradientAngle}deg, ${formData.gradientColor1}, ${formData.gradientColor2})` }} />
+            )}
+            {(formData.gradientColor1 || formData.gradientColor2) && (
+              <Button type="button" variant="outline" size="sm" onClick={() => { updateField('gradientColor1', ''); updateField('gradientColor2', ''); }} className="rounded-lg text-xs">Clear Gradient</Button>
+            )}
+          </div>
+
+          {/* Button Gradient */}
+          <div className="bg-muted/30 rounded-xl p-4 space-y-3 border border-border/50">
+            <Label className="text-sm font-semibold">View Button Gradient</Label>
+            <p className="text-xs text-muted-foreground">Custom gradient for the "View Company" button.</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs text-muted-foreground">Color 1</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <Input type="color" value={formData.buttonGradientColor1 || '#4F46E5'} onChange={(e) => updateField('buttonGradientColor1', e.target.value)} className="w-10 h-8 p-0.5 rounded-lg cursor-pointer" />
+                  <Input type="text" value={formData.buttonGradientColor1} onChange={(e) => updateField('buttonGradientColor1', e.target.value)} placeholder="#4F46E5" className="flex-1 rounded-lg text-xs" />
+                </div>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Color 2</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <Input type="color" value={formData.buttonGradientColor2 || '#0EA5E9'} onChange={(e) => updateField('buttonGradientColor2', e.target.value)} className="w-10 h-8 p-0.5 rounded-lg cursor-pointer" />
+                  <Input type="text" value={formData.buttonGradientColor2} onChange={(e) => updateField('buttonGradientColor2', e.target.value)} placeholder="#0EA5E9" className="flex-1 rounded-lg text-xs" />
+                </div>
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">Angle ({formData.buttonGradientAngle}°)</Label>
+              <Input type="range" min="0" max="360" value={formData.buttonGradientAngle} onChange={(e) => updateField('buttonGradientAngle', e.target.value)} className="mt-1" />
+            </div>
+            {formData.buttonGradientColor1 && formData.buttonGradientColor2 && (
+              <div className="h-8 rounded-lg border border-border" style={{ background: `linear-gradient(${formData.buttonGradientAngle}deg, ${formData.buttonGradientColor1}, ${formData.buttonGradientColor2})` }} />
+            )}
+            {(formData.buttonGradientColor1 || formData.buttonGradientColor2) && (
+              <Button type="button" variant="outline" size="sm" onClick={() => { updateField('buttonGradientColor1', ''); updateField('buttonGradientColor2', ''); }} className="rounded-lg text-xs">Clear Button Gradient</Button>
+            )}
           </div>
 
           <div>

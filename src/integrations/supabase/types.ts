@@ -21,12 +21,18 @@ export type Database = {
           applied_date: string | null
           brand_color: string | null
           brand_title_html: string | null
+          button_gradient_angle: number | null
+          button_gradient_color_1: string | null
+          button_gradient_color_2: string | null
           career_url: string
           collection_ids: string[] | null
           company_size: string | null
           created_at: string
           description: string | null
           founded_year: number | null
+          gradient_angle: number | null
+          gradient_color_1: string | null
+          gradient_color_2: string | null
           hq: string | null
           hq_city: string | null
           hq_country: string | null
@@ -50,12 +56,18 @@ export type Database = {
           applied_date?: string | null
           brand_color?: string | null
           brand_title_html?: string | null
+          button_gradient_angle?: number | null
+          button_gradient_color_1?: string | null
+          button_gradient_color_2?: string | null
           career_url?: string
           collection_ids?: string[] | null
           company_size?: string | null
           created_at?: string
           description?: string | null
           founded_year?: number | null
+          gradient_angle?: number | null
+          gradient_color_1?: string | null
+          gradient_color_2?: string | null
           hq?: string | null
           hq_city?: string | null
           hq_country?: string | null
@@ -79,12 +91,18 @@ export type Database = {
           applied_date?: string | null
           brand_color?: string | null
           brand_title_html?: string | null
+          button_gradient_angle?: number | null
+          button_gradient_color_1?: string | null
+          button_gradient_color_2?: string | null
           career_url?: string
           collection_ids?: string[] | null
           company_size?: string | null
           created_at?: string
           description?: string | null
           founded_year?: number | null
+          gradient_angle?: number | null
+          gradient_color_1?: string | null
+          gradient_color_2?: string | null
           hq?: string | null
           hq_city?: string | null
           hq_country?: string | null

@@ -23,6 +23,12 @@ function mapRow(c: any): Company {
     about: c.about,
     notes: c.notes,
     brandColor: c.brand_color,
+    gradientColor1: c.gradient_color_1,
+    gradientColor2: c.gradient_color_2,
+    gradientAngle: c.gradient_angle,
+    buttonGradientColor1: c.button_gradient_color_1,
+    buttonGradientColor2: c.button_gradient_color_2,
+    buttonGradientAngle: c.button_gradient_angle,
     isFavorite: c.is_favorite,
     isPinned: c.is_pinned,
     applicationStatus: c.application_status,
@@ -54,6 +60,12 @@ function toDbRow(data: Partial<Company>): any {
   if (data.about !== undefined) row.about = data.about;
   if (data.notes !== undefined) row.notes = data.notes;
   if (data.brandColor !== undefined) row.brand_color = data.brandColor;
+  if (data.gradientColor1 !== undefined) row.gradient_color_1 = data.gradientColor1;
+  if (data.gradientColor2 !== undefined) row.gradient_color_2 = data.gradientColor2;
+  if (data.gradientAngle !== undefined) row.gradient_angle = data.gradientAngle;
+  if (data.buttonGradientColor1 !== undefined) row.button_gradient_color_1 = data.buttonGradientColor1;
+  if (data.buttonGradientColor2 !== undefined) row.button_gradient_color_2 = data.buttonGradientColor2;
+  if (data.buttonGradientAngle !== undefined) row.button_gradient_angle = data.buttonGradientAngle;
   if (data.isFavorite !== undefined) row.is_favorite = data.isFavorite;
   if (data.isPinned !== undefined) row.is_pinned = data.isPinned;
   if (data.applicationStatus !== undefined) row.application_status = data.applicationStatus;

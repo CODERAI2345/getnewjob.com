@@ -1,10 +1,10 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter, Upload, Download, ArrowUpDown, Pin } from 'lucide-react';
+import { Search, Filter, ArrowUpDown, Pin } from 'lucide-react';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ImportModal } from '@/components/modals/ImportModal';
+
 import { useCompanies } from '@/hooks/useCompanies';
 import { Company, SortOption } from '@/types';
 import { cn } from '@/lib/utils';
@@ -46,12 +46,11 @@ const companySizes = [
 
 export default function Companies() {
   const navigate = useNavigate();
-  const { companies, togglePinned, importCompanies, exportCompanies } = useCompanies();
+  const { companies, togglePinned } = useCompanies();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState('All');
   const [selectedSize, setSelectedSize] = useState('All');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
-  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   const filteredAndSortedCompanies = useMemo(() => {
     let result = companies.filter((company) => {
@@ -91,17 +90,6 @@ export default function Companies() {
 
     return result;
   }, [companies, searchQuery, selectedIndustry, selectedSize, sortBy]);
-
-  const handleExport = () => {
-    const data = exportCompanies();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `careerhub-backup-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
 
   return (
     <PageLayout>
@@ -173,17 +161,6 @@ export default function Companies() {
               </SelectContent>
             </Select>
 
-            <div className="flex-1" />
-
-            <Button variant="outline" onClick={() => setIsImportModalOpen(true)} className="rounded-xl">
-              <Upload className="w-4 h-4 mr-2" />
-              Import
-            </Button>
-
-            <Button variant="outline" onClick={handleExport} className="rounded-xl">
-              <Download className="w-4 h-4 mr-2" />
-              Export
-            </Button>
           </div>
         </div>
 
@@ -221,13 +198,15 @@ export default function Companies() {
                   </div>
                 </div>
 
-                {/* Dark gradient overlay from bottom - uses brand color if available */}
+                {/* Gradient overlay */}
                 <div
                   className="absolute inset-0"
                   style={{
-                    background: company.brandColor
-                      ? `linear-gradient(to top, ${company.brandColor}ee, ${company.brandColor}66, transparent)`
-                      : 'linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.4), transparent)',
+                    background: company.gradientColor1 && company.gradientColor2
+                      ? `linear-gradient(${company.gradientAngle || 180}deg, ${company.gradientColor1}ee, ${company.gradientColor2}cc, transparent)`
+                      : company.brandColor
+                        ? `linear-gradient(to top, ${company.brandColor}ee, ${company.brandColor}66, transparent)`
+                        : 'linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.4), transparent)',
                   }}
                 />
 
@@ -284,10 +263,12 @@ export default function Companies() {
 
                   {/* CTA Button */}
                   <button
-                    className="mt-1 w-full py-2.5 rounded-xl font-semibold text-sm transition-colors shadow-lg"
+                    className="mt-1 w-full py-2.5 rounded-xl font-semibold text-sm transition-all shadow-lg hover:scale-105"
                     style={{
-                      backgroundColor: company.brandColor || 'white',
-                      color: company.brandColor ? 'white' : 'hsl(var(--foreground))',
+                      background: company.buttonGradientColor1 && company.buttonGradientColor2
+                        ? `linear-gradient(${company.buttonGradientAngle || 90}deg, ${company.buttonGradientColor1}, ${company.buttonGradientColor2})`
+                        : company.brandColor || 'white',
+                      color: (company.buttonGradientColor1 || company.brandColor) ? 'white' : 'hsl(var(--foreground))',
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -313,12 +294,6 @@ export default function Companies() {
                 ? 'Import companies from CSV using the admin panel.'
                 : 'Try adjusting your search or filters.'}
             </p>
-            {companies.length === 0 && (
-              <Button variant="outline" onClick={() => setIsImportModalOpen(true)} className="rounded-xl border-accent/30 text-accent hover:bg-accent/10">
-                <Upload className="w-4 h-4 mr-2" />
-                Import from CSV
-              </Button>
-            )}
           </div>
         )}
 
@@ -330,11 +305,6 @@ export default function Companies() {
         )}
       </div>
 
-      <ImportModal
-        isOpen={isImportModalOpen}
-        onClose={() => setIsImportModalOpen(false)}
-        onImport={importCompanies}
-      />
     </PageLayout>
   );
 }

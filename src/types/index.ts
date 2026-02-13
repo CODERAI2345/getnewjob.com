@@ -33,6 +33,12 @@ export interface Company {
   about?: string;
   notes?: string;
   brandColor?: string;
+  gradientColor1?: string;
+  gradientColor2?: string;
+  gradientAngle?: number;
+  buttonGradientColor1?: string;
+  buttonGradientColor2?: string;
+  buttonGradientAngle?: number;
   isFavorite: boolean;
   isPinned: boolean;
   applicationStatus?: ApplicationStatus;
