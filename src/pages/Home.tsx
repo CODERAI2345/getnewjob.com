@@ -45,7 +45,7 @@ export default function Home() {
   return (
     <PageLayout>
       {/* Hero Section */}
-      <section className="relative overflow-hidden gradient-bg-hero">
+      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-blue-50 dark:from-background dark:via-background dark:to-background">
         <div className="section-container py-20 lg:py-32 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left content */}
@@ -98,38 +98,13 @@ export default function Home() {
 
             {/* Right image */}
             <div className="relative animate-fade-in-up hidden lg:block">
-              <div className="relative rounded-2xl overflow-hidden shadow-card-hover">
+              <div className="relative rounded-3xl overflow-hidden shadow-xl">
                 <img
                   src={heroImage}
                   alt="Modern workplace"
                   className="w-full h-auto object-cover transition-transform duration-700 hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/30 to-transparent" />
-              </div>
-              
-              {/* Floating cards */}
-              <div className="absolute -left-8 top-1/4 glass rounded-xl p-4 shadow-lg animate-float">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                    <Building2 className="w-5 h-5 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-foreground text-sm">500+ Companies</p>
-                    <p className="text-xs text-muted-foreground">Organized</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="absolute -right-4 bottom-1/4 glass rounded-xl p-4 shadow-lg animate-float" style={{ animationDelay: '1.5s' }}>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent to-primary flex items-center justify-center">
-                    <Shield className="w-5 h-5 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-foreground text-sm">Your Data</p>
-                    <p className="text-xs text-muted-foreground">Stays Local</p>
-                  </div>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent" />
               </div>
             </div>
           </div>

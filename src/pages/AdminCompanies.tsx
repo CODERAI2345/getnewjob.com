@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, ArrowLeft, Edit2, Trash2, Upload, Download } from 'lucide-react';
+import { Search, ArrowLeft, Edit2, Trash2, Upload, Download, Sparkles } from 'lucide-react';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CompanyModal } from '@/components/modals/FormModals';
 import { ImportModal } from '@/components/modals/ImportModal';
 import { QuickAddCompany } from '@/components/companies/QuickAddCompany';
+import { AICustomize } from '@/components/admin/AICustomize';
 import { useCompanies } from '@/hooks/useCompanies';
 import { Company } from '@/types';
 
@@ -99,6 +100,10 @@ export default function AdminCompanies() {
           <TabsList className="rounded-xl">
             <TabsTrigger value="companies" className="rounded-lg">Companies</TabsTrigger>
             <TabsTrigger value="quick-add" className="rounded-lg">Quick Add</TabsTrigger>
+            <TabsTrigger value="ai-customize" className="rounded-lg flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5" />
+              AI Customize
+            </TabsTrigger>
             <TabsTrigger value="settings" className="rounded-lg">Settings</TabsTrigger>
           </TabsList>
 
@@ -214,6 +219,11 @@ export default function AdminCompanies() {
           {/* Quick Add Tab */}
           <TabsContent value="quick-add">
             <QuickAddCompany onCompanyAdded={handleQuickAdd} />
+          </TabsContent>
+
+          {/* AI Customize Tab */}
+          <TabsContent value="ai-customize">
+            <AICustomize companies={companies} onUpdate={updateCompany} />
           </TabsContent>
 
           {/* Settings Tab */}

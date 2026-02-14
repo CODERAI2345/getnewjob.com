@@ -49,12 +49,16 @@ export default function Portals() {
         </div>
 
         {/* Subtabs */}
-        <div className="subtab-container mb-6">
+        <div className="flex flex-wrap gap-2 mb-6">
           {subtabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`subtab flex items-center gap-2 ${activeTab === tab.id ? 'active' : ''}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                activeTab === tab.id
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'bg-indigo-50 dark:bg-secondary text-primary hover:bg-indigo-100 dark:hover:bg-secondary/80'
+              }`}
             >
               <tab.icon className="w-4 h-4" />
               {tab.label}
