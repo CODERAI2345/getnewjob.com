@@ -24,15 +24,20 @@ export type Database = {
           button_gradient_angle: number | null
           button_gradient_color_1: string | null
           button_gradient_color_2: string | null
+          career_benefits: string | null
           career_url: string
           collection_ids: string[] | null
           company_size: string | null
+          core_strength: string | null
           created_at: string
           description: string | null
           founded_year: number | null
+          future_direction: string | null
           gradient_angle: number | null
           gradient_color_1: string | null
           gradient_color_2: string | null
+          headcount: string | null
+          hiring_technologies: string | null
           hq: string | null
           hq_city: string | null
           hq_country: string | null
@@ -45,7 +50,10 @@ export type Database = {
           location: string | null
           logo_url: string | null
           name: string
+          notable_products: string | null
           notes: string | null
+          organization_strength: string | null
+          stage: string | null
           technologies: string[] | null
           updated_at: string
           website: string | null
@@ -59,15 +67,20 @@ export type Database = {
           button_gradient_angle?: number | null
           button_gradient_color_1?: string | null
           button_gradient_color_2?: string | null
+          career_benefits?: string | null
           career_url?: string
           collection_ids?: string[] | null
           company_size?: string | null
+          core_strength?: string | null
           created_at?: string
           description?: string | null
           founded_year?: number | null
+          future_direction?: string | null
           gradient_angle?: number | null
           gradient_color_1?: string | null
           gradient_color_2?: string | null
+          headcount?: string | null
+          hiring_technologies?: string | null
           hq?: string | null
           hq_city?: string | null
           hq_country?: string | null
@@ -80,7 +93,10 @@ export type Database = {
           location?: string | null
           logo_url?: string | null
           name: string
+          notable_products?: string | null
           notes?: string | null
+          organization_strength?: string | null
+          stage?: string | null
           technologies?: string[] | null
           updated_at?: string
           website?: string | null
@@ -94,15 +110,20 @@ export type Database = {
           button_gradient_angle?: number | null
           button_gradient_color_1?: string | null
           button_gradient_color_2?: string | null
+          career_benefits?: string | null
           career_url?: string
           collection_ids?: string[] | null
           company_size?: string | null
+          core_strength?: string | null
           created_at?: string
           description?: string | null
           founded_year?: number | null
+          future_direction?: string | null
           gradient_angle?: number | null
           gradient_color_1?: string | null
           gradient_color_2?: string | null
+          headcount?: string | null
+          hiring_technologies?: string | null
           hq?: string | null
           hq_city?: string | null
           hq_country?: string | null
@@ -115,7 +136,10 @@ export type Database = {
           location?: string | null
           logo_url?: string | null
           name?: string
+          notable_products?: string | null
           notes?: string | null
+          organization_strength?: string | null
+          stage?: string | null
           technologies?: string[] | null
           updated_at?: string
           website?: string | null

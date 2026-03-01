@@ -30,7 +30,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-3-flash-preview",
         messages: [
           {
             role: "system",
@@ -46,7 +46,15 @@ serve(async (req) => {
   "industry": "string or null",
   "companySize": "string like '51-200' or null",
   "technologies": ["array of strings"] or null,
-  "description": "string or null"
+  "description": "string or null",
+  "coreStrength": "string describing core competencies or null",
+  "hiringTechnologies": "comma-separated string of technologies they hire for or null",
+  "futureDirection": "string about company future plans/strategy or null",
+  "organizationStrength": "string about company culture/org strengths or null",
+  "notableProducts": "comma-separated string of key products/services or null",
+  "careerBenefits": "string about benefits of working there or null",
+  "stage": "string like 'Public (NASDAQ: XYZ)' or 'Series B' or 'Private' or null",
+  "headcount": "string like '190,000+' or '500' or null"
 }`,
           },
           { role: "user", content: text },
@@ -55,13 +63,32 @@ serve(async (req) => {
       }),
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("AI gateway error:", response.status, errorText);
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add credits." }), {
+          status: 402,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ error: "AI service error" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || "";
     
-    // Parse the JSON from the response
     let parsed;
     try {
-      // Try to extract JSON if wrapped in code fences
       const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/) || [null, content];
       parsed = JSON.parse(jsonMatch[1].trim());
     } catch {

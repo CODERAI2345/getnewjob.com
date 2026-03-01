@@ -29,6 +29,14 @@ function mapRow(c: any): Company {
     buttonGradientColor1: c.button_gradient_color_1,
     buttonGradientColor2: c.button_gradient_color_2,
     buttonGradientAngle: c.button_gradient_angle,
+    coreStrength: c.core_strength,
+    hiringTechnologies: c.hiring_technologies,
+    futureDirection: c.future_direction,
+    organizationStrength: c.organization_strength,
+    notableProducts: c.notable_products,
+    careerBenefits: c.career_benefits,
+    stage: c.stage,
+    headcount: c.headcount,
     isFavorite: c.is_favorite,
     isPinned: c.is_pinned,
     applicationStatus: c.application_status,
@@ -66,6 +74,14 @@ function toDbRow(data: Partial<Company>): any {
   if (data.buttonGradientColor1 !== undefined) row.button_gradient_color_1 = data.buttonGradientColor1;
   if (data.buttonGradientColor2 !== undefined) row.button_gradient_color_2 = data.buttonGradientColor2;
   if (data.buttonGradientAngle !== undefined) row.button_gradient_angle = data.buttonGradientAngle;
+  if (data.coreStrength !== undefined) row.core_strength = data.coreStrength;
+  if (data.hiringTechnologies !== undefined) row.hiring_technologies = data.hiringTechnologies;
+  if (data.futureDirection !== undefined) row.future_direction = data.futureDirection;
+  if (data.organizationStrength !== undefined) row.organization_strength = data.organizationStrength;
+  if (data.notableProducts !== undefined) row.notable_products = data.notableProducts;
+  if (data.careerBenefits !== undefined) row.career_benefits = data.careerBenefits;
+  if (data.stage !== undefined) row.stage = data.stage;
+  if (data.headcount !== undefined) row.headcount = data.headcount;
   if (data.isFavorite !== undefined) row.is_favorite = data.isFavorite;
   if (data.isPinned !== undefined) row.is_pinned = data.isPinned;
   if (data.applicationStatus !== undefined) row.application_status = data.applicationStatus;
@@ -207,6 +223,14 @@ export function useCompanies() {
         description: row.description || row.about,
         about: row.about,
         notes: row.notes,
+        core_strength: row.coreStrength,
+        hiring_technologies: row.hiringTechnologies,
+        future_direction: row.futureDirection,
+        organization_strength: row.organizationStrength,
+        notable_products: row.notableProducts,
+        career_benefits: row.careerBenefits,
+        stage: row.stage,
+        headcount: row.headcount,
         is_favorite: false,
         is_pinned: false,
         application_status: 'not_applied',

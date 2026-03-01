@@ -39,6 +39,14 @@ export interface Company {
   buttonGradientColor1?: string;
   buttonGradientColor2?: string;
   buttonGradientAngle?: number;
+  coreStrength?: string;
+  hiringTechnologies?: string;
+  futureDirection?: string;
+  organizationStrength?: string;
+  notableProducts?: string;
+  careerBenefits?: string;
+  stage?: string;
+  headcount?: string;
   isFavorite: boolean;
   isPinned: boolean;
   applicationStatus?: ApplicationStatus;

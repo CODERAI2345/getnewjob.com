@@ -1,9 +1,9 @@
 import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
-  ArrowLeft, Upload, Palette, Type, RotateCcw, Download, Trash2, 
-  Image, Building2, Globe, ChevronRight, LayoutDashboard, Database,
-  Settings2, Paintbrush, FolderCog
+  ArrowLeft, Upload, Palette, Type, 
+  Image, Building2, Globe, ChevronRight, LayoutDashboard,
+  Settings2, Paintbrush
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,7 +20,7 @@ export default function Customize() {
   
   const [siteTitle, setSiteTitle] = useState(settings.siteTitle);
   const [themeColor, setThemeColor] = useState(settings.themeColor || '#14B8A6');
-  const [activeSection, setActiveSection] = useState<'overview' | 'appearance' | 'data'>('overview');
+  const [activeSection, setActiveSection] = useState<'overview' | 'appearance'>('overview');
   const bannerInputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
 
@@ -83,37 +83,9 @@ export default function Customize() {
     }
   };
 
-  const handleExportAll = () => {
-    const allData = {
-      companies,
-      portals,
-      settings,
-      exportedAt: new Date().toISOString(),
-    };
-    const blob = new Blob([JSON.stringify(allData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `careerhub-full-backup-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success('Full backup exported');
-  };
-
-  const handleResetAll = () => {
-    if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
-      localStorage.removeItem('careerhub_companies');
-      localStorage.removeItem('careerhub_portals');
-      resetSettings();
-      toast.success('All data has been reset');
-      navigate('/');
-    }
-  };
-
   const sidebarItems = [
     { id: 'overview' as const, label: 'Overview', icon: LayoutDashboard },
     { id: 'appearance' as const, label: 'Appearance', icon: Paintbrush },
-    { id: 'data' as const, label: 'Data & Backup', icon: Database },
   ];
 
   return (
@@ -247,7 +219,7 @@ export default function Customize() {
                               Manage Companies
                             </h4>
                             <p className="text-sm text-muted-foreground">
-                              Add, edit, delete • Upload logos • Import CSV
+                              Add, edit companies • AI Quick Add • AI Customize
                             </p>
                           </div>
                         </div>
@@ -333,7 +305,7 @@ export default function Customize() {
                         className="absolute top-2 right-2 rounded-lg"
                         onClick={() => updateSettings({ bannerUrl: undefined })}
                       >
-                        <Trash2 className="w-4 h-4" />
+                        Remove
                       </Button>
                     </div>
                   )}
@@ -372,7 +344,7 @@ export default function Customize() {
                         className="absolute top-2 right-2 rounded-lg"
                         onClick={() => updateSettings({ backgroundUrl: undefined })}
                       >
-                        <Trash2 className="w-4 h-4" />
+                        Remove
                       </Button>
                     </div>
                   )}
@@ -420,54 +392,6 @@ export default function Customize() {
                       Apply Color
                     </Button>
                   </div>
-                </section>
-              </div>
-            )}
-
-            {/* Data Management Section */}
-            {activeSection === 'data' && (
-              <div className="space-y-6 animate-fade-in">
-                <div>
-                  <h2 className="font-display text-2xl font-bold text-foreground mb-1">Data & Backup</h2>
-                  <p className="text-muted-foreground">Export, backup, or reset your data.</p>
-                </div>
-
-                <section className="rounded-2xl border border-border/40 bg-card p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <Download className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">Export Backup</h3>
-                      <p className="text-sm text-muted-foreground">Download all your data as JSON</p>
-                    </div>
-                  </div>
-                  
-                  <div className="p-4 rounded-xl bg-muted/50 mb-4">
-                    <div className="text-sm text-muted-foreground">
-                      <strong>Current Data:</strong> {companies.length} companies, {portals.length} portals
-                    </div>
-                  </div>
-                  <Button variant="outline" onClick={handleExportAll} className="rounded-xl">
-                    <Download className="w-4 h-4 mr-2" />
-                    Export Full Backup
-                  </Button>
-                </section>
-
-                <section className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center">
-                      <Trash2 className="w-5 h-5 text-destructive" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-destructive">Danger Zone</h3>
-                      <p className="text-sm text-muted-foreground">Reset all data including companies, portals, and settings</p>
-                    </div>
-                  </div>
-                  <Button variant="destructive" onClick={handleResetAll} className="rounded-xl">
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    Reset All Data
-                  </Button>
                 </section>
               </div>
             )}
