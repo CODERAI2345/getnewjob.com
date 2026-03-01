@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Search, ArrowLeft, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Search, ArrowLeft, Edit2 } from 'lucide-react';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +9,7 @@ import { usePortals } from '@/hooks/usePortals';
 import { Portal } from '@/types';
 
 export default function AdminPortals() {
-  const { portals, addPortal, updatePortal, deletePortal } = usePortals();
+  const { portals, addPortal, updatePortal } = usePortals();
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPortal, setEditingPortal] = useState<Portal | undefined>();
@@ -33,11 +33,6 @@ export default function AdminPortals() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this portal?')) {
-      deletePortal(id);
-    }
-  };
 
   return (
     <PageLayout>
@@ -140,14 +135,6 @@ export default function AdminPortals() {
                           className="h-8 w-8 rounded-lg hover:bg-secondary"
                         >
                           <Edit2 className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDelete(portal.id)}
-                          className="h-8 w-8 rounded-lg hover:bg-destructive/10 hover:text-destructive"
-                        >
-                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </td>

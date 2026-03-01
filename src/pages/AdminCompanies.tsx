@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, ArrowLeft, Edit2, Trash2, Upload, Download, Sparkles } from 'lucide-react';
+import { Search, ArrowLeft, Edit2, Upload, Download, Sparkles } from 'lucide-react';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +13,7 @@ import { useCompanies } from '@/hooks/useCompanies';
 import { Company } from '@/types';
 
 export default function AdminCompanies() {
-  const { companies, addCompany, updateCompany, deleteCompany, importCompanies, exportCompanies } = useCompanies();
+  const { companies, addCompany, updateCompany, importCompanies, exportCompanies } = useCompanies();
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
@@ -38,11 +38,6 @@ export default function AdminCompanies() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this company?')) {
-      deleteCompany(id);
-    }
-  };
 
   const handleQuickAdd = async (data: Partial<Company>) => {
     await addCompany(data as Omit<Company, 'id' | 'createdAt' | 'updatedAt' | 'isFavorite' | 'isPinned'>);
@@ -176,14 +171,6 @@ export default function AdminCompanies() {
                                 className="h-8 w-8 rounded-lg hover:bg-secondary"
                               >
                                 <Edit2 className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleDelete(company.id)}
-                                className="h-8 w-8 rounded-lg hover:bg-destructive/10 hover:text-destructive"
-                              >
-                                <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
                           </td>
