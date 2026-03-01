@@ -1,10 +1,9 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter, ArrowUpDown, Pin } from 'lucide-react';
+import { Search, Filter, ArrowUpDown, Pin, Building2, Rocket, MapPin, Globe, BookOpen, Star } from 'lucide-react';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-
 import { useCompanies } from '@/hooks/useCompanies';
 import { Company, SortOption } from '@/types';
 import { cn } from '@/lib/utils';
@@ -17,32 +16,60 @@ import {
 } from '@/components/ui/select';
 
 const industries = [
-  'All',
-  'Technology',
-  'Finance',
-  'Healthcare',
-  'E-commerce',
-  'Education',
-  'Manufacturing',
-  'Consulting',
-  'Media',
-  'Telecom',
-  'Automotive',
-  'Energy',
-  'Real Estate',
-  'Other',
+  'All', 'Technology', 'Finance', 'Healthcare', 'E-commerce', 'Education',
+  'Manufacturing', 'Consulting', 'Media', 'Telecom', 'Automotive',
+  'Energy', 'Real Estate', 'Other',
 ];
 
-const companySizes = [
-  'All',
-  '1-10',
-  '11-50',
-  '51-200',
-  '201-500',
-  '501-1000',
-  '1001-5000',
-  '5000+',
+const companySizes = ['All', '1-10', '11-50', '51-200', '201-500', '501-1000', '1001-5000', '5000+'];
+
+type CategoryTab = 'all' | 'startups' | 'indian' | 'abroad' | 'learning' | 'important';
+
+const categoryTabs: { id: CategoryTab; label: string; icon: React.ElementType }[] = [
+  { id: 'all', label: 'All Companies', icon: Building2 },
+  { id: 'startups', label: 'Startups (Global)', icon: Rocket },
+  { id: 'indian', label: 'Indian Companies', icon: MapPin },
+  { id: 'abroad', label: 'Abroad Portals', icon: Globe },
+  { id: 'learning', label: 'Learning Portals', icon: BookOpen },
+  { id: 'important', label: 'Important Info', icon: Star },
 ];
+
+function filterByCategory(companies: Company[], category: CategoryTab): Company[] {
+  switch (category) {
+    case 'startups':
+      return companies.filter(c =>
+        c.stage?.toLowerCase().includes('series') ||
+        c.stage?.toLowerCase().includes('seed') ||
+        c.stage?.toLowerCase().includes('startup') ||
+        c.companySize === '1-10' || c.companySize === '11-50' || c.companySize === '51-200'
+      );
+    case 'indian':
+      return companies.filter(c =>
+        c.hqCountry?.toLowerCase().includes('india') ||
+        c.hqCity?.toLowerCase().includes('bangalore') ||
+        c.hqCity?.toLowerCase().includes('mumbai') ||
+        c.hqCity?.toLowerCase().includes('delhi') ||
+        c.hqCity?.toLowerCase().includes('hyderabad') ||
+        c.hqCity?.toLowerCase().includes('chennai') ||
+        c.hqCity?.toLowerCase().includes('pune')
+      );
+    case 'abroad':
+      return companies.filter(c =>
+        c.hqCountry && !c.hqCountry.toLowerCase().includes('india')
+      );
+    case 'learning':
+      return companies.filter(c =>
+        c.industry?.toLowerCase().includes('education') ||
+        c.industry?.toLowerCase().includes('edtech') ||
+        c.description?.toLowerCase().includes('learning') ||
+        c.description?.toLowerCase().includes('training')
+      );
+    case 'important':
+      return companies.filter(c => c.isFavorite || c.isPinned);
+    default:
+      return companies;
+  }
+}
 
 export default function Companies() {
   const navigate = useNavigate();
@@ -51,10 +78,13 @@ export default function Companies() {
   const [selectedIndustry, setSelectedIndustry] = useState('All');
   const [selectedSize, setSelectedSize] = useState('All');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const [activeCategory, setActiveCategory] = useState<CategoryTab>('all');
 
   const filteredAndSortedCompanies = useMemo(() => {
-    let result = companies.filter((company) => {
-      const matchesSearch = 
+    let result = filterByCategory(companies, activeCategory);
+
+    result = result.filter((company) => {
+      const matchesSearch =
         company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         company.industry?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         company.technologies?.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -63,33 +93,24 @@ export default function Companies() {
       return matchesSearch && matchesIndustry && matchesSize;
     });
 
-    // Sort
     result.sort((a, b) => {
-      // Pinned companies always come first
       if (a.isPinned && !b.isPinned) return -1;
       if (!a.isPinned && b.isPinned) return 1;
 
       switch (sortBy) {
-        case 'a-z':
-          return a.name.localeCompare(b.name);
-        case 'z-a':
-          return b.name.localeCompare(a.name);
-        case 'newest':
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        case 'oldest':
-          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        case 'a-z': return a.name.localeCompare(b.name);
+        case 'z-a': return b.name.localeCompare(a.name);
+        case 'newest': return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case 'oldest': return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         case 'size':
           const sizeOrder = ['5000+', '1001-5000', '501-1000', '201-500', '51-200', '11-50', '1-10'];
-          const aIndex = sizeOrder.indexOf(a.companySize || '');
-          const bIndex = sizeOrder.indexOf(b.companySize || '');
-          return aIndex - bIndex;
-        default:
-          return 0;
+          return sizeOrder.indexOf(a.companySize || '') - sizeOrder.indexOf(b.companySize || '');
+        default: return 0;
       }
     });
 
     return result;
-  }, [companies, searchQuery, selectedIndustry, selectedSize, sortBy]);
+  }, [companies, searchQuery, selectedIndustry, selectedSize, sortBy, activeCategory]);
 
   return (
     <PageLayout>
@@ -104,9 +125,29 @@ export default function Companies() {
           </p>
         </div>
 
+        {/* Category Tabs */}
+        <div className="mb-6 overflow-x-auto">
+          <div className="inline-flex items-center gap-1 p-1 rounded-xl border border-border/50 bg-muted/30">
+            {categoryTabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveCategory(tab.id)}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all",
+                  activeCategory === tab.id
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <tab.icon className="w-4 h-4" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Actions bar */}
         <div className="flex flex-col gap-4 mb-8">
-          {/* Search */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -118,7 +159,6 @@ export default function Companies() {
             />
           </div>
 
-          {/* Filters row */}
           <div className="flex flex-wrap gap-3">
             <Select value={selectedIndustry} onValueChange={setSelectedIndustry}>
               <SelectTrigger className="w-[160px] rounded-xl">
@@ -127,9 +167,7 @@ export default function Companies() {
               </SelectTrigger>
               <SelectContent>
                 {industries.map((ind) => (
-                  <SelectItem key={ind} value={ind}>
-                    {ind}
-                  </SelectItem>
+                  <SelectItem key={ind} value={ind}>{ind}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -160,7 +198,6 @@ export default function Companies() {
                 <SelectItem value="size">Size</SelectItem>
               </SelectContent>
             </Select>
-
           </div>
         </div>
 
@@ -221,7 +258,6 @@ export default function Companies() {
 
                 {/* Content at the bottom */}
                 <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col gap-3">
-                  {/* Company name */}
                   {company.brandTitleHtml ? (
                     <h3
                       className="font-display font-bold text-xl text-white drop-shadow-lg"
@@ -233,7 +269,6 @@ export default function Companies() {
                     </h3>
                   )}
 
-                  {/* Description / Location */}
                   <p className="text-sm text-white/70 line-clamp-2 leading-relaxed">
                     {company.description || company.about || (
                       [company.hqCity, company.hqCountry].filter(Boolean).length > 0
@@ -242,7 +277,6 @@ export default function Companies() {
                     )}
                   </p>
 
-                  {/* Pill tags */}
                   <div className="flex flex-wrap gap-2">
                     {company.industry && (
                       <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/15 text-white/90 backdrop-blur-sm">
@@ -261,7 +295,6 @@ export default function Companies() {
                     )}
                   </div>
 
-                  {/* CTA Button */}
                   <button
                     className="mt-1 w-full py-2.5 rounded-xl font-semibold text-sm transition-all shadow-lg hover:scale-105"
                     style={{
@@ -291,20 +324,18 @@ export default function Companies() {
             </h3>
             <p className="text-muted-foreground mb-6">
               {companies.length === 0
-                ? 'Import companies from CSV using the admin panel.'
+                ? 'Add companies using the admin panel.'
                 : 'Try adjusting your search or filters.'}
             </p>
           </div>
         )}
 
-        {/* Results count */}
         {companies.length > 0 && (
           <div className="mt-8 text-center text-sm text-muted-foreground">
             Showing {filteredAndSortedCompanies.length} of {companies.length} companies
           </div>
         )}
       </div>
-
     </PageLayout>
   );
 }
