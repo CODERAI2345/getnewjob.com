@@ -144,16 +144,6 @@ export function useCompanies() {
     await fetchCompanies();
   }, [fetchCompanies]);
 
-  const deleteCompany = useCallback(async (id: string) => {
-    const { error } = await supabase.from('companies').delete().eq('id', id);
-
-    if (error) {
-      console.error('Error deleting company:', error);
-      return;
-    }
-
-    await fetchCompanies();
-  }, [fetchCompanies]);
 
   const toggleFavorite = useCallback(async (id: string) => {
     const company = companies.find((c) => c.id === id);
@@ -261,7 +251,7 @@ export function useCompanies() {
     loading,
     addCompany,
     updateCompany,
-    deleteCompany,
+    
     toggleFavorite,
     togglePinned,
     getCompanyById,
