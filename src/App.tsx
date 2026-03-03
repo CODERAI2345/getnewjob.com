@@ -10,6 +10,7 @@ import CompanyDetail from "./pages/CompanyDetail";
 import Customize from "./pages/Customize";
 import AdminPortals from "./pages/AdminPortals";
 import AdminCompanies from "./pages/AdminCompanies";
+import JobSearch from "./pages/JobSearch";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/portals" element={<Portals />} />
           <Route path="/companies" element={<Companies />} />
           <Route path="/company/:id" element={<CompanyDetail />} />
+          <Route path="/job-search" element={<JobSearch />} />
           <Route path="/customize" element={<Customize />} />
           <Route path="/admin/portals" element={<AdminPortals />} />
           <Route path="/admin/companies" element={<AdminCompanies />} />

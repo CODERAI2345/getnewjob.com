@@ -9,6 +9,7 @@ const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/portals', label: 'Portals' },
   { href: '/companies', label: 'Companies' },
+  { href: '/job-search', label: 'Job Search' },
 ];
 
 interface NavbarProps {
