@@ -1,7 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Moon, Sun, Menu, X, Settings } from 'lucide-react';
+import { Search, Moon, Sun, Menu, X, Settings, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -19,6 +20,7 @@ interface NavbarProps {
 export function Navbar({ onSearch }: NavbarProps) {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const { signOut } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -98,6 +100,17 @@ export function Navbar({ onSearch }: NavbarProps) {
               ) : (
                 <Sun className="w-4 h-4" />
               )}
+            </Button>
+
+            {/* Sign out */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={signOut}
+              className="w-9 h-9 rounded-xl hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all duration-300"
+              title="Sign out"
+            >
+              <LogOut className="w-4 h-4" />
             </Button>
 
             {/* Mobile menu button */}
