@@ -23,9 +23,10 @@ import {
 import { PageLayout } from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useCompanies } from '@/hooks/useCompanies';
+import { useCompanyById, useCompanies } from '@/hooks/useCompanies';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Mock insights data — in production this would come from your DB or API
 function getInsightsForCompany(company: { technologies?: string[]; industry?: string }) {
@@ -47,9 +48,19 @@ function getInsightsForCompany(company: { technologies?: string[]; industry?: st
 export default function CompanyDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getCompanyById, toggleFavorite, togglePinned } = useCompanies();
+  const { company, loading } = useCompanyById(id);
+  const { toggleFavorite, togglePinned } = useCompanies();
 
-  const company = getCompanyById(id || '');
+  if (loading) {
+    return (
+      <PageLayout>
+        <div className="section-container py-8 space-y-4">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-64 w-full" />
+        </div>
+      </PageLayout>
+    );
+  }
 
   if (!company) {
     return (
