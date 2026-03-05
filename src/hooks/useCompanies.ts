@@ -91,6 +91,31 @@ function toDbRow(data: Partial<Company>): any {
   return row;
 }
 
+export function useCompanyById(id: string | undefined) {
+  const [company, setCompany] = useState<Company | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchCompany = useCallback(async () => {
+    if (!id) { setLoading(false); return; }
+    const { data, error } = await supabase
+      .from('companies')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching company:', error);
+    } else if (data) {
+      setCompany(mapRow(data));
+    }
+    setLoading(false);
+  }, [id]);
+
+  useEffect(() => { fetchCompany(); }, [fetchCompany]);
+
+  return { company, loading, refetch: fetchCompany };
+}
+
 export function useCompanies() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
