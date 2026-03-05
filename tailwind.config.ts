@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'Space Grotesk', 'system-ui', 'sans-serif'],
-        display: ['Space Grotesk', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['DM Sans', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+        display: ['Plus Jakarta Sans', 'DM Sans', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -78,9 +78,9 @@ export default {
         "2xl": "calc(var(--radius) + 8px)",
       },
       boxShadow: {
-        'card': '0 2px 8px hsl(var(--card-shadow) / 0.06), 0 8px 24px hsl(var(--card-shadow) / 0.04)',
-        'card-hover': '0 8px 24px hsl(var(--card-shadow) / 0.1), 0 24px 48px hsl(var(--card-shadow) / 0.08)',
-        'glow': '0 10px 30px hsl(var(--primary) / 0.4)',
+        'card': '0 2px 8px hsl(var(--card-shadow) / 0.2)',
+        'card-hover': '0 8px 32px hsl(var(--card-shadow) / 0.3)',
+        'glow': '0 8px 30px hsl(var(--primary) / 0.4)',
         'glow-lg': '0 15px 50px hsl(var(--primary) / 0.5)',
       },
       keyframes: {
@@ -108,21 +108,9 @@ export default {
           "0%": { transform: "translateX(100%)" },
           "100%": { transform: "translateX(0)" },
         },
-        "shimmer": {
-          "0%": { backgroundPosition: "-200% 0" },
-          "100%": { backgroundPosition: "200% 0" },
-        },
         "float": {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-12px)" },
-        },
-        "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 20px hsl(var(--primary) / 0.3)" },
-          "50%": { boxShadow: "0 0 40px hsl(var(--primary) / 0.5)" },
-        },
-        "rotate-gradient": {
-          "0%": { transform: "rotate(0deg)" },
-          "100%": { transform: "rotate(360deg)" },
         },
       },
       animation: {
@@ -132,10 +120,7 @@ export default {
         "fade-in-up": "fade-in-up 0.6s ease-out",
         "scale-in": "scale-in 0.3s ease-out",
         "slide-in-right": "slide-in-right 0.3s ease-out",
-        "shimmer": "shimmer 2s linear infinite",
         "float": "float 6s ease-in-out infinite",
-        "pulse-glow": "pulse-glow 3s ease-in-out infinite",
-        "rotate-gradient": "rotate-gradient 20s linear infinite",
       },
     },
   },
