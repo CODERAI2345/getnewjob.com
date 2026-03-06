@@ -6,16 +6,56 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// Simple in-memory rate limiting
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 15;
+const RATE_WINDOW_MS = 60_000;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return false;
+  }
+  entry.count++;
+  return entry.count > RATE_LIMIT;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Rate limiting
+    const ip = req.headers.get("x-forwarded-for") || req.headers.get("cf-connecting-ip") || "unknown";
+    if (isRateLimited(ip)) {
+      return new Response(JSON.stringify({ error: "Too many requests. Please wait a moment." }), {
+        status: 429,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { command, companyName, currentData } = await req.json();
 
     if (!command || !companyName) {
       return new Response(JSON.stringify({ error: "Missing command or companyName" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Input validation
+    if (typeof command !== "string" || command.length > 2000) {
+      return new Response(JSON.stringify({ error: "Command must be a string under 2000 characters" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (typeof companyName !== "string" || companyName.length > 200) {
+      return new Response(JSON.stringify({ error: "Invalid company name" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -92,7 +132,6 @@ RULES:
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content?.trim() || "";
 
-    // Parse JSON from response (strip markdown fences if present)
     let parsed;
     try {
       const jsonStr = content.replace(/^```json?\n?/i, "").replace(/\n?```$/i, "").trim();
