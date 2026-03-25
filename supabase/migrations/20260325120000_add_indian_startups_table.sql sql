@@ -1,0 +1,28 @@
+CREATE TABLE IF NOT EXISTS public.indian_startups (
+  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  tagline TEXT,
+  description TEXT,
+  sector TEXT NOT NULL DEFAULT 'others',
+  website TEXT,
+  career_url TEXT,
+  logo_url TEXT,
+  brand_color TEXT,
+  company_size TEXT,
+  founded_year INTEGER,
+  hq_city TEXT,
+  technologies TEXT[],
+  is_featured BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.indian_startups ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can read startups"   ON public.indian_startups FOR SELECT USING (true);
+CREATE POLICY "Anyone can insert startups" ON public.indian_startups FOR INSERT WITH CHECK (true);
+CREATE POLICY "Anyone can update startups" ON public.indian_startups FOR UPDATE USING (true);
+CREATE POLICY "Anyone can delete startups" ON public.indian_startups FOR DELETE USING (true);
+
+CREATE INDEX IF NOT EXISTS idx_indian_startups_sector ON public.indian_startups (sector);
+CREATE INDEX IF NOT EXISTS idx_indian_startups_featured ON public.indian_startups (is_featured);
