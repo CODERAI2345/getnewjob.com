@@ -9,7 +9,7 @@ const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/portals', label: 'Portals' },
   { href: '/companies', label: 'Companies' },
-  { href: '/job-search', label: 'Job Search' },
+  { href: '/indian-startups', label: '🚀 D2C Startups' },
 ];
 
 interface NavbarProps {
@@ -77,36 +77,18 @@ export function Navbar({ onSearch }: NavbarProps) {
 
             {/* Admin Link */}
             <Link to="/customize">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="w-9 h-9 rounded-xl hover:bg-secondary transition-all duration-300"
-              >
+              <Button variant="ghost" size="icon" className="w-9 h-9 rounded-xl hover:bg-secondary transition-all duration-300">
                 <Settings className="w-4 h-4" />
               </Button>
             </Link>
 
             {/* Theme toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="w-9 h-9 rounded-xl hover:bg-secondary transition-all duration-300"
-            >
-              {theme === 'light' ? (
-                <Moon className="w-4 h-4" />
-              ) : (
-                <Sun className="w-4 h-4" />
-              )}
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="w-9 h-9 rounded-xl hover:bg-secondary transition-all duration-300">
+              {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
             </Button>
 
             {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden w-9 h-9 rounded-xl"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
+            <Button variant="ghost" size="icon" className="md:hidden w-9 h-9 rounded-xl" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
               {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </Button>
           </div>
@@ -131,7 +113,6 @@ export function Navbar({ onSearch }: NavbarProps) {
                 </Link>
               ))}
             </div>
-            {/* Mobile search */}
             <form onSubmit={handleSearch} className="mt-4 sm:hidden">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
