@@ -37,6 +37,12 @@ function mapRow(c: any): Company {
     careerBenefits: c.career_benefits,
     stage: c.stage,
     headcount: c.headcount,
+    companyType: c.company_type,
+    isUnicorn: c.is_unicorn,
+    fundingStage: c.funding_stage,
+    fundingAmount: c.funding_amount,
+    sector: c.sector,
+    revenueModel: c.revenue_model,
     isFavorite: c.is_favorite,
     isPinned: c.is_pinned,
     applicationStatus: c.application_status,
@@ -82,6 +88,12 @@ function toDbRow(data: Partial<Company>): any {
   if (data.careerBenefits !== undefined) row.career_benefits = data.careerBenefits;
   if (data.stage !== undefined) row.stage = data.stage;
   if (data.headcount !== undefined) row.headcount = data.headcount;
+  if (data.companyType !== undefined) row.company_type = data.companyType;
+  if (data.isUnicorn !== undefined) row.is_unicorn = data.isUnicorn;
+  if (data.fundingStage !== undefined) row.funding_stage = data.fundingStage;
+  if (data.fundingAmount !== undefined) row.funding_amount = data.fundingAmount;
+  if (data.sector !== undefined) row.sector = data.sector;
+  if (data.revenueModel !== undefined) row.revenue_model = data.revenueModel;
   if (data.isFavorite !== undefined) row.is_favorite = data.isFavorite;
   if (data.isPinned !== undefined) row.is_pinned = data.isPinned;
   if (data.applicationStatus !== undefined) row.application_status = data.applicationStatus;
@@ -169,7 +181,6 @@ export function useCompanies() {
     await fetchCompanies();
   }, [fetchCompanies]);
 
-
   const toggleFavorite = useCallback(async (id: string) => {
     const company = companies.find((c) => c.id === id);
     if (!company) return;
@@ -246,6 +257,12 @@ export function useCompanies() {
         career_benefits: row.careerBenefits,
         stage: row.stage,
         headcount: row.headcount,
+        company_type: row.companyType,
+        is_unicorn: row.isUnicorn ?? false,
+        funding_stage: row.fundingStage,
+        funding_amount: row.fundingAmount,
+        sector: row.sector,
+        revenue_model: row.revenueModel,
         is_favorite: false,
         is_pinned: false,
         application_status: 'not_applied',
@@ -276,7 +293,6 @@ export function useCompanies() {
     loading,
     addCompany,
     updateCompany,
-    
     toggleFavorite,
     togglePinned,
     getCompanyById,
