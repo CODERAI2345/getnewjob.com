@@ -248,10 +248,9 @@ export default function Customize() {
                       </div>
                     </div>
                   </Link>
-                </div>
-              </div>
-             
-              <Link to="/admin/indian-startups" className="block">
+
+                  {/* ✅ FIXED: moved inside the space-y-3 div, not orphaned outside */}
+                  <Link to="/admin/indian-startups" className="block">
                     <div className="rounded-2xl border border-border/40 bg-card p-5 hover:border-orange-500/50 transition-all group cursor-pointer">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
@@ -271,6 +270,8 @@ export default function Customize() {
                       </div>
                     </div>
                   </Link>
+                </div>
+              </div>
             )}
 
             {/* Appearance Section */}
