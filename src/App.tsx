@@ -12,7 +12,7 @@ import CompanyDetail from "./pages/CompanyDetail";
 import Customize from "./pages/Customize";
 import AdminPortals from "./pages/AdminPortals";
 import AdminCompanies from "./pages/AdminCompanies";
-import JobSearch from "./pages/JobSearch";
+import IndianStartups from "./pages/IndianStartups";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -31,7 +31,7 @@ const App = () => (
             <Route path="/portals" element={<Portals />} />
             <Route path="/companies" element={<Companies />} />
             <Route path="/company/:id" element={<CompanyDetail />} />
-            <Route path="/job-search" element={<JobSearch />} />
+            <Route path="/indian-startups" element={<IndianStartups />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/customize" element={<ProtectedRoute><Customize /></ProtectedRoute>} />
