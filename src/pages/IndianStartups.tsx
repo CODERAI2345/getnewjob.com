@@ -249,8 +249,8 @@ export default function IndianStartups() {
                         onStatusChange={s => setStatus(startup.id, s, 'indian_startups')}
                       />
                       <div className="flex items-center gap-2">
-                        {startup.website && (
-                          
+                      {startup.website && (
+                      <a 
                             href={startup.website}
                             target="_blank"
                             rel="noopener noreferrer"
