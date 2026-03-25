@@ -1,9 +1,9 @@
 import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { 
-  ArrowLeft, Upload, Palette, Type, 
+import {
+  ArrowLeft, Upload, Palette, Type,
   Image, Building2, Globe, ChevronRight, LayoutDashboard,
-  Settings2, Paintbrush, Rocket   // ← add Rocket here
+  Settings2, Paintbrush, Rocket
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
