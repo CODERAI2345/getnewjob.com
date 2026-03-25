@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Image, Loader2 } from 'lucide-react';
 import { uploadImage } from '@/lib/storage';
+import { Portal, Company } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,7 +14,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { RichTextPaste } from '@/components/inputs/RichTextPaste';
-import { Portal, Company } from '@/types';
 
 interface PortalModalProps {
   isOpen: boolean;
@@ -23,16 +23,8 @@ interface PortalModalProps {
 }
 
 const categories = [
-  'Remote Jobs',
-  'Germany',
-  'Finland',
-  'Sweden',
-  'Norway',
-  'Job Board',
-  'Tech',
-  'Startup',
-  'Freelance',
-  'Other',
+  'Remote Jobs', 'Germany', 'Finland', 'Sweden', 'Norway',
+  'Job Board', 'Tech', 'Startup', 'Freelance', 'Other',
 ];
 
 export function PortalModal({ isOpen, onClose, onSave, portal }: PortalModalProps) {
@@ -65,7 +57,6 @@ export function PortalModal({ isOpen, onClose, onSave, portal }: PortalModalProp
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !url || !category) return;
-
     onSave({ name, url, category, icon, imageUrl: imageUrl || undefined });
     onClose();
   };
@@ -129,9 +120,7 @@ export function PortalModal({ isOpen, onClose, onSave, portal }: PortalModalProp
               </SelectTrigger>
               <SelectContent>
                 {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
+                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -149,50 +138,28 @@ export function PortalModal({ isOpen, onClose, onSave, portal }: PortalModalProp
             />
           </div>
 
-          {/* Image Upload */}
           <div>
             <Label className="flex items-center gap-2">
               <Image className="w-4 h-4 text-primary" />
               Portal Image
             </Label>
             <div className="mt-1.5 flex items-center gap-4">
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="flex-1 rounded-xl"
-              />
+              <Input type="file" accept="image/*" onChange={handleImageUpload} className="flex-1 rounded-xl" />
               <span className="text-sm text-muted-foreground">or</span>
-              <Input
-                type="url"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="Image URL"
-                className="flex-1 rounded-xl"
-              />
+              <Input type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="Image URL" className="flex-1 rounded-xl" />
             </div>
             {imageUrl && (
               <div className="mt-3 flex items-center gap-3">
                 <div className="w-16 h-16 rounded-xl border border-border overflow-hidden bg-muted flex items-center justify-center">
                   <img src={imageUrl} alt="Portal preview" className="w-full h-full object-contain" />
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setImageUrl('')}
-                  className="rounded-xl"
-                >
-                  Remove
-                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => setImageUrl('')} className="rounded-xl">Remove</Button>
               </div>
             )}
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose} className="flex-1 rounded-xl">
-              Cancel
-            </Button>
+            <Button type="button" variant="outline" onClick={onClose} className="flex-1 rounded-xl">Cancel</Button>
             <Button type="submit" className="flex-1 btn-gradient rounded-xl">
               {portal ? 'Save Changes' : 'Add Portal'}
             </Button>
@@ -211,30 +178,12 @@ interface CompanyModalProps {
 }
 
 const industries = [
-  'Technology',
-  'Finance',
-  'Healthcare',
-  'E-commerce',
-  'Education',
-  'Manufacturing',
-  'Consulting',
-  'Media',
-  'Telecom',
-  'Automotive',
-  'Energy',
-  'Real Estate',
-  'Other',
+  'Technology', 'Finance', 'Healthcare', 'E-commerce', 'Education',
+  'Manufacturing', 'Consulting', 'Media', 'Telecom', 'Automotive',
+  'Energy', 'Real Estate', 'Other',
 ];
 
-const companySizes = [
-  '1-10',
-  '11-50',
-  '51-200',
-  '201-500',
-  '501-1000',
-  '1001-5000',
-  '5000+',
-];
+const companySizes = ['1-10', '11-50', '51-200', '201-500', '501-1000', '1001-5000', '5000+'];
 
 export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalProps) {
   const [formData, setFormData] = useState({
@@ -249,6 +198,11 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
     hqCountry: '',
     industry: '',
     companySize: '',
+    companyType: '',
+    fundingStage: '',
+    fundingAmount: '',
+    sector: '',
+    isUnicorn: 'false',
     technologies: '',
     description: '',
     notes: '',
@@ -275,6 +229,11 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
         hqCountry: company.hqCountry || '',
         industry: company.industry || '',
         companySize: company.companySize || '',
+        companyType: company.companyType || '',
+        fundingStage: company.fundingStage || '',
+        fundingAmount: company.fundingAmount || '',
+        sector: company.sector || '',
+        isUnicorn: company.isUnicorn ? 'true' : 'false',
         technologies: company.technologies?.join(', ') || '',
         description: company.description || '',
         notes: company.notes || '',
@@ -299,6 +258,11 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
         hqCountry: '',
         industry: '',
         companySize: '',
+        companyType: '',
+        fundingStage: '',
+        fundingAmount: '',
+        sector: '',
+        isUnicorn: 'false',
         technologies: '',
         description: '',
         notes: '',
@@ -338,6 +302,11 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
       technologies: formData.technologies
         ? formData.technologies.split(',').map((t) => t.trim()).filter(Boolean)
         : [],
+      companyType: (formData.companyType as Company['companyType']) || undefined,
+      fundingStage: (formData.fundingStage as Company['fundingStage']) || undefined,
+      fundingAmount: formData.fundingAmount || undefined,
+      sector: formData.sector || undefined,
+      isUnicorn: formData.isUnicorn === 'true',
     });
     onClose();
   };
@@ -375,26 +344,11 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="name">Company Name *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => updateField('name', e.target.value)}
-                placeholder="e.g., Acme Inc."
-                className="mt-1.5 rounded-xl"
-                required
-              />
+              <Input id="name" value={formData.name} onChange={(e) => updateField('name', e.target.value)} placeholder="e.g., Acme Inc." className="mt-1.5 rounded-xl" required />
             </div>
-
             <div>
               <Label htmlFor="website">Website</Label>
-              <Input
-                id="website"
-                type="url"
-                value={formData.website}
-                onChange={(e) => updateField('website', e.target.value)}
-                placeholder="https://acme.com"
-                className="mt-1.5 rounded-xl"
-              />
+              <Input id="website" type="url" value={formData.website} onChange={(e) => updateField('website', e.target.value)} placeholder="https://acme.com" className="mt-1.5 rounded-xl" />
             </div>
           </div>
 
@@ -405,39 +359,16 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
               Company Logo
             </Label>
             <div className="mt-1.5 flex items-center gap-4">
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={handleLogoUpload}
-                className="flex-1 rounded-xl"
-              />
+              <Input type="file" accept="image/*" onChange={handleLogoUpload} className="flex-1 rounded-xl" />
               <span className="text-sm text-muted-foreground">or</span>
-              <Input
-                type="url"
-                value={formData.logoUrl}
-                onChange={(e) => updateField('logoUrl', e.target.value)}
-                placeholder="Logo URL"
-                className="flex-1 rounded-xl"
-              />
+              <Input type="url" value={formData.logoUrl} onChange={(e) => updateField('logoUrl', e.target.value)} placeholder="Logo URL" className="flex-1 rounded-xl" />
             </div>
             {formData.logoUrl && (
               <div className="mt-3 flex items-center gap-3">
                 <div className="w-16 h-16 rounded-xl border border-border overflow-hidden bg-muted flex items-center justify-center">
-                  <img 
-                    src={formData.logoUrl} 
-                    alt="Logo preview" 
-                    className="w-full h-full object-contain"
-                  />
+                  <img src={formData.logoUrl} alt="Logo preview" className="w-full h-full object-contain" />
                 </div>
-                <Button 
-                  type="button"
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => updateField('logoUrl', '')}
-                  className="rounded-xl"
-                >
-                  Remove
-                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => updateField('logoUrl', '')} className="rounded-xl">Remove</Button>
               </div>
             )}
           </div>
@@ -452,80 +383,36 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="careerUrl">Career Site URL</Label>
-              <Input
-                id="careerUrl"
-                type="url"
-                value={formData.careerUrl}
-                onChange={(e) => updateField('careerUrl', e.target.value)}
-                placeholder="https://careers.acme.com"
-                className="mt-1.5 rounded-xl"
-              />
+              <Input id="careerUrl" type="url" value={formData.careerUrl} onChange={(e) => updateField('careerUrl', e.target.value)} placeholder="https://careers.acme.com" className="mt-1.5 rounded-xl" />
             </div>
-
             <div>
               <Label htmlFor="linkedinUrl">LinkedIn Company Page</Label>
-              <Input
-                id="linkedinUrl"
-                type="url"
-                value={formData.linkedinUrl}
-                onChange={(e) => updateField('linkedinUrl', e.target.value)}
-                placeholder="https://linkedin.com/company/acme"
-                className="mt-1.5 rounded-xl"
-              />
+              <Input id="linkedinUrl" type="url" value={formData.linkedinUrl} onChange={(e) => updateField('linkedinUrl', e.target.value)} placeholder="https://linkedin.com/company/acme" className="mt-1.5 rounded-xl" />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="foundedYear">Founded Year</Label>
-              <Input
-                id="foundedYear"
-                type="number"
-                value={formData.foundedYear}
-                onChange={(e) => updateField('foundedYear', e.target.value)}
-                placeholder="2015"
-                className="mt-1.5 rounded-xl"
-                min="1800"
-                max={new Date().getFullYear()}
-              />
+              <Input id="foundedYear" type="number" value={formData.foundedYear} onChange={(e) => updateField('foundedYear', e.target.value)} placeholder="2015" className="mt-1.5 rounded-xl" min="1800" max={new Date().getFullYear()} />
             </div>
-
             <div>
               <Label htmlFor="hqCity">HQ City</Label>
-              <Input
-                id="hqCity"
-                value={formData.hqCity}
-                onChange={(e) => updateField('hqCity', e.target.value)}
-                placeholder="San Francisco"
-                className="mt-1.5 rounded-xl"
-              />
+              <Input id="hqCity" value={formData.hqCity} onChange={(e) => updateField('hqCity', e.target.value)} placeholder="San Francisco" className="mt-1.5 rounded-xl" />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="hqCountry">HQ Country</Label>
-              <Input
-                id="hqCountry"
-                value={formData.hqCountry}
-                onChange={(e) => updateField('hqCountry', e.target.value)}
-                placeholder="USA"
-                className="mt-1.5 rounded-xl"
-              />
+              <Input id="hqCountry" value={formData.hqCountry} onChange={(e) => updateField('hqCountry', e.target.value)} placeholder="USA" className="mt-1.5 rounded-xl" />
             </div>
-
             <div>
               <Label htmlFor="industry">Industry</Label>
               <Select value={formData.industry} onValueChange={(v) => updateField('industry', v)}>
-                <SelectTrigger className="mt-1.5 rounded-xl">
-                  <SelectValue placeholder="Select industry" />
-                </SelectTrigger>
+                <SelectTrigger className="mt-1.5 rounded-xl"><SelectValue placeholder="Select industry" /></SelectTrigger>
                 <SelectContent>
-                  {industries.map((ind) => (
-                    <SelectItem key={ind} value={ind}>
-                      {ind}
-                    </SelectItem>
-                  ))}
+                  {industries.map((ind) => (<SelectItem key={ind} value={ind}>{ind}</SelectItem>))}
                 </SelectContent>
               </Select>
             </div>
@@ -535,15 +422,9 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
             <div>
               <Label htmlFor="companySize">Company Size</Label>
               <Select value={formData.companySize} onValueChange={(v) => updateField('companySize', v)}>
-                <SelectTrigger className="mt-1.5 rounded-xl">
-                  <SelectValue placeholder="Select size" />
-                </SelectTrigger>
+                <SelectTrigger className="mt-1.5 rounded-xl"><SelectValue placeholder="Select size" /></SelectTrigger>
                 <SelectContent>
-                  {companySizes.map((size) => (
-                    <SelectItem key={size} value={size}>
-                      {size} employees
-                    </SelectItem>
-                  ))}
+                  {companySizes.map((size) => (<SelectItem key={size} value={size}>{size} employees</SelectItem>))}
                 </SelectContent>
               </Select>
             </div>
@@ -551,34 +432,81 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
 
           <div>
             <Label htmlFor="technologies">Technologies (comma-separated)</Label>
-            <Input
-              id="technologies"
-              value={formData.technologies}
-              onChange={(e) => updateField('technologies', e.target.value)}
-              placeholder="React, Node.js, AWS, Kubernetes"
-              className="mt-1.5 rounded-xl"
-            />
+            <Input id="technologies" value={formData.technologies} onChange={(e) => updateField('technologies', e.target.value)} placeholder="React, Node.js, AWS, Kubernetes" className="mt-1.5 rounded-xl" />
+          </div>
+
+          {/* Company Classification */}
+          <div className="bg-muted/30 rounded-xl p-4 space-y-4 border border-border/50">
+            <Label className="text-sm font-semibold">Company Classification</Label>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs text-muted-foreground">Company Type</Label>
+                <Select value={formData.companyType} onValueChange={(v) => updateField('companyType', v)}>
+                  <SelectTrigger className="mt-1.5 rounded-xl"><SelectValue placeholder="Select type" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="product">📦 Product-based</SelectItem>
+                    <SelectItem value="service">🛠 Service-based</SelectItem>
+                    <SelectItem value="mnc">🌐 MNC</SelectItem>
+                    <SelectItem value="startup">🚀 Startup</SelectItem>
+                    <SelectItem value="unicorn">🦄 Unicorn</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Funding Stage</Label>
+                <Select value={formData.fundingStage} onValueChange={(v) => updateField('fundingStage', v)}>
+                  <SelectTrigger className="mt-1.5 rounded-xl"><SelectValue placeholder="Select stage" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="bootstrapped">Bootstrapped</SelectItem>
+                    <SelectItem value="seed">Seed</SelectItem>
+                    <SelectItem value="series-a">Series A</SelectItem>
+                    <SelectItem value="series-b">Series B</SelectItem>
+                    <SelectItem value="series-c">Series C</SelectItem>
+                    <SelectItem value="series-d+">Series D+</SelectItem>
+                    <SelectItem value="ipo">IPO / Public</SelectItem>
+                    <SelectItem value="acquired">Acquired</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Sector</Label>
+                <Select value={formData.sector} onValueChange={(v) => updateField('sector', v)}>
+                  <SelectTrigger className="mt-1.5 rounded-xl"><SelectValue placeholder="Select sector" /></SelectTrigger>
+                  <SelectContent>
+                    {['Fintech','Healthtech','Edtech','SaaS','D2C','E-commerce','Logistics','AI/ML','Cybersecurity','Gaming','HR Tech','LegalTech','Proptech','CleanTech','Deeptech','Media & Entertainment','Other'].map(s => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Funding Amount (e.g. $500M)</Label>
+                <Input value={formData.fundingAmount} onChange={(e) => updateField('fundingAmount', e.target.value)} placeholder="$500M" className="mt-1.5 rounded-xl" />
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="isUnicorn"
+                checked={formData.isUnicorn === 'true'}
+                onChange={(e) => updateField('isUnicorn', e.target.checked ? 'true' : 'false')}
+                className="w-4 h-4 rounded accent-primary"
+              />
+              <Label htmlFor="isUnicorn" className="text-sm cursor-pointer">🦄 Mark as Indian Unicorn</Label>
+            </div>
           </div>
 
           <div>
             <Label htmlFor="description">About / Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => updateField('description', e.target.value)}
-              placeholder="Brief description of the company..."
-              className="mt-1.5 rounded-xl"
-              rows={3}
-            />
+            <Textarea id="description" value={formData.description} onChange={(e) => updateField('description', e.target.value)} placeholder="Brief description of the company..." className="mt-1.5 rounded-xl" rows={3} />
           </div>
 
           {/* Brand Color */}
           <div>
             <Label htmlFor="brandColor" className="flex items-center gap-2">
               Brand Color (fallback)
-              {formData.brandColor && (
-                <span className="w-5 h-5 rounded-full border border-border inline-block" style={{ backgroundColor: formData.brandColor }} />
-              )}
+              {formData.brandColor && (<span className="w-5 h-5 rounded-full border border-border inline-block" style={{ backgroundColor: formData.brandColor }} />)}
             </Label>
             <div className="mt-1.5 flex items-center gap-3">
               <Input id="brandColor" type="color" value={formData.brandColor || '#000000'} onChange={(e) => updateField('brandColor', e.target.value)} className="w-14 h-10 p-1 rounded-xl cursor-pointer" />
@@ -653,20 +581,11 @@ export function CompanyModal({ isOpen, onClose, onSave, company }: CompanyModalP
 
           <div>
             <Label htmlFor="notes">Private Notes</Label>
-            <Textarea
-              id="notes"
-              value={formData.notes}
-              onChange={(e) => updateField('notes', e.target.value)}
-              placeholder="Your personal notes about this company..."
-              className="mt-1.5 rounded-xl"
-              rows={2}
-            />
+            <Textarea id="notes" value={formData.notes} onChange={(e) => updateField('notes', e.target.value)} placeholder="Your personal notes about this company..." className="mt-1.5 rounded-xl" rows={2} />
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose} className="flex-1 rounded-xl">
-              Cancel
-            </Button>
+            <Button type="button" variant="outline" onClick={onClose} className="flex-1 rounded-xl">Cancel</Button>
             <Button type="submit" className="flex-1 btn-gradient rounded-xl">
               {company ? 'Save Changes' : 'Add Company'}
             </Button>
