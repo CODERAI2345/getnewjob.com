@@ -12,6 +12,7 @@ import CompanyDetail from "./pages/CompanyDetail";
 import Customize from "./pages/Customize";
 import AdminPortals from "./pages/AdminPortals";
 import AdminCompanies from "./pages/AdminCompanies";
+import AdminIndianStartups from "./pages/AdminIndianStartups";
 import IndianStartups from "./pages/IndianStartups";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/customize" element={<ProtectedRoute><Customize /></ProtectedRoute>} />
             <Route path="/admin/portals" element={<ProtectedRoute><AdminPortals /></ProtectedRoute>} />
             <Route path="/admin/companies" element={<ProtectedRoute><AdminCompanies /></ProtectedRoute>} />
+            <Route path="/admin/indian-startups" element={<ProtectedRoute><AdminIndianStartups /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
