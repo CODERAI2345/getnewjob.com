@@ -47,6 +47,12 @@ export interface Company {
   careerBenefits?: string;
   stage?: string;
   headcount?: string;
+  companyType?: 'product' | 'service' | 'mnc' | 'startup' | 'unicorn' | 'other';
+  isUnicorn?: boolean;
+  fundingStage?: 'bootstrapped' | 'seed' | 'series-a' | 'series-b' | 'series-c' | 'series-d+' | 'ipo' | 'acquired';
+  fundingAmount?: string;
+  sector?: string;
+  revenueModel?: 'b2b' | 'b2c' | 'b2b2c';
   isFavorite: boolean;
   isPinned: boolean;
   applicationStatus?: ApplicationStatus;
@@ -66,11 +72,11 @@ export interface Collection {
   updatedAt: string;
 }
 
-export type ApplicationStatus = 
-  | 'not_applied' 
-  | 'applied' 
-  | 'interview' 
-  | 'offer' 
+export type ApplicationStatus =
+  | 'not_applied'
+  | 'applied'
+  | 'interview'
+  | 'offer'
   | 'rejected';
 
 export interface ImportResult {
@@ -80,7 +86,7 @@ export interface ImportResult {
   errors: string[];
 }
 
-export type SortOption = 'a-z' | 'z-a' | 'newest' | 'oldest' | 'size';
+export type SortOption = 'a-z' | 'z-a' | 'newest' | 'oldest' | 'size' | 'funding';
 
 export interface FilterState {
   search: string;
