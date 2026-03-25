@@ -147,10 +147,10 @@ export default function IndianStartups() {
 
         <p className="text-sm text-muted-foreground mb-5">Showing {filtered.length} of {startups.length} startups</p>
 
-        {/* Hotel-style horizontal cards */}
+        {/* Cards */}
         {loading ? (
           <div className="space-y-4">
-            {[1,2,3,4,5].map(i => (
+            {[1, 2, 3, 4, 5].map(i => (
               <div key={i} className="h-32 bg-muted/40 rounded-2xl animate-pulse" />
             ))}
           </div>
@@ -185,7 +185,6 @@ export default function IndianStartups() {
                     <span className="text-[10px] font-semibold text-white/80 text-center px-2 leading-tight">
                       {sectorLabel}
                     </span>
-                    {/* Decorative circle */}
                     <div className="absolute -bottom-6 -right-6 w-20 h-20 rounded-full bg-white/10" />
                     <div className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-white/10" />
                   </div>
@@ -240,7 +239,7 @@ export default function IndianStartups() {
                       ))}
                     </div>
 
-                    {/* Bottom row — status + action */}
+                    {/* Bottom row */}
                     <div className="flex items-center justify-between gap-3 pt-2 border-t border-border/50">
                       <StatusBadge
                         companyId={startup.id}
@@ -249,8 +248,8 @@ export default function IndianStartups() {
                         onStatusChange={s => setStatus(startup.id, s, 'indian_startups')}
                       />
                       <div className="flex items-center gap-2">
-                      {startup.website && (
-                      <a 
+                        {startup.website && (
+                          <a
                             href={startup.website}
                             target="_blank"
                             rel="noopener noreferrer"
