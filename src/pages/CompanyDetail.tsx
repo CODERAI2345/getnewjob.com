@@ -1,34 +1,19 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  Star, 
-  Pin, 
-  Building2, 
-  Calendar, 
-  MapPin, 
-  Users, 
-  Briefcase,
-  ExternalLink,
-  Linkedin,
-  ArrowRight,
-  Globe,
-  Cpu,
-  BarChart3,
-  Shield,
-  Cloud,
-  Database,
-  Brain,
-  Server,
+import {
+  ArrowLeft, Star, Pin, Building2, Calendar, MapPin, Users, Briefcase,
+  ExternalLink, Linkedin, ArrowRight, Globe, Cpu, BarChart3, Shield,
+  Cloud, Database, Brain, Server,
 } from 'lucide-react';
+import { useEffect } from 'react';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCompanyById, useCompanies } from '@/hooks/useCompanies';
+import { useVisitStatus, STATUS_CONFIG, ALL_STATUSES } from '@/hooks/useVisitStatus';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// Mock insights data — in production this would come from your DB or API
 function getInsightsForCompany(company: { technologies?: string[]; industry?: string }) {
   const focusAreas = company.technologies?.length
     ? company.technologies.slice(0, 6)
@@ -50,6 +35,14 @@ export default function CompanyDetail() {
   const navigate = useNavigate();
   const { company, loading } = useCompanyById(id);
   const { toggleFavorite, togglePinned } = useCompanies();
+  const { getStatus, setStatus, markVisited } = useVisitStatus();
+
+  // Auto-mark as visited when detail page loads
+  useEffect(() => {
+    if (id) {
+      markVisited(id, 'companies');
+    }
+  }, [id, markVisited]);
 
   if (loading) {
     return (
@@ -78,6 +71,8 @@ export default function CompanyDetail() {
 
   const location = [company.hqCity, company.hqCountry].filter(Boolean).join(', ');
   const insights = getInsightsForCompany(company);
+  const currentStatus = getStatus(company.id, 'companies');
+  const statusCfg = STATUS_CONFIG[currentStatus];
 
   return (
     <PageLayout>
@@ -91,7 +86,7 @@ export default function CompanyDetail() {
           Back
         </button>
 
-        {/* ── Premium Header ── */}
+        {/* Header */}
         <div className="rounded-2xl bg-gradient-to-r from-secondary to-accent/10 border border-border p-7 md:p-8 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
             {/* Left */}
@@ -106,26 +101,22 @@ export default function CompanyDetail() {
                 <div className="flex flex-wrap items-center gap-2">
                   {company.industry && (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary">
-                      <Briefcase className="w-3 h-3" />
-                      {company.industry}
+                      <Briefcase className="w-3 h-3" /> {company.industry}
                     </span>
                   )}
                   {company.companySize && (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-accent/10 text-accent">
-                      <Users className="w-3 h-3" />
-                      {company.companySize}
+                      <Users className="w-3 h-3" /> {company.companySize}
                     </span>
                   )}
                   {company.foundedYear && (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-muted text-muted-foreground">
-                      <Calendar className="w-3 h-3" />
-                      Est. {company.foundedYear}
+                      <Calendar className="w-3 h-3" /> Est. {company.foundedYear}
                     </span>
                   )}
                   {location && (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-muted text-muted-foreground">
-                      <MapPin className="w-3 h-3" />
-                      {location}
+                      <MapPin className="w-3 h-3" /> {location}
                     </span>
                   )}
                 </div>
@@ -133,42 +124,62 @@ export default function CompanyDetail() {
             </div>
 
             {/* Right actions */}
-            <div className="flex items-center gap-2 shrink-0">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => toggleFavorite(company.id)}
-                className={cn(
-                  "rounded-xl",
-                  company.isFavorite && "text-amber-500 border-amber-500/50 bg-amber-500/10"
+            <div className="flex flex-col gap-3 shrink-0">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline" size="icon"
+                  onClick={() => toggleFavorite(company.id)}
+                  className={cn('rounded-xl', company.isFavorite && 'text-amber-500 border-amber-500/50 bg-amber-500/10')}
+                >
+                  <Star className={cn('w-4 h-4', company.isFavorite && 'fill-current')} />
+                </Button>
+                <Button
+                  variant="outline" size="icon"
+                  onClick={() => togglePinned(company.id)}
+                  className={cn('rounded-xl', company.isPinned && 'text-primary border-primary/50 bg-primary/10')}
+                >
+                  <Pin className={cn('w-4 h-4', company.isPinned && 'fill-current')} />
+                </Button>
+                {company.careerUrl && (
+                  <a href={company.careerUrl} target="_blank" rel="noopener noreferrer">
+                    <Button className="btn-gradient rounded-xl gap-2">
+                      <ExternalLink className="w-4 h-4" />
+                      Visit Career Site
+                    </Button>
+                  </a>
                 )}
-              >
-                <Star className={cn("w-4 h-4", company.isFavorite && "fill-current")} />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => togglePinned(company.id)}
-                className={cn(
-                  "rounded-xl",
-                  company.isPinned && "text-primary border-primary/50 bg-primary/10"
-                )}
-              >
-                <Pin className={cn("w-4 h-4", company.isPinned && "fill-current")} />
-              </Button>
-              {company.careerUrl && (
-                <a href={company.careerUrl} target="_blank" rel="noopener noreferrer">
-                  <Button className="btn-gradient rounded-xl gap-2">
-                    <ExternalLink className="w-4 h-4" />
-                    Visit Career Site
-                  </Button>
-                </a>
-              )}
+              </div>
+
+              {/* Application status selector */}
+              <div className="flex flex-col gap-1.5">
+                <p className="text-xs font-medium text-muted-foreground">Application Status</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {ALL_STATUSES.map(s => {
+                    const cfg = STATUS_CONFIG[s];
+                    const isActive = currentStatus === s;
+                    return (
+                      <button
+                        key={s}
+                        onClick={() => setStatus(company.id, s, 'companies')}
+                        className={cn(
+                          'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all',
+                          isActive
+                            ? cn(cfg.badge, 'ring-2 ring-offset-1 ring-primary/40')
+                            : 'text-muted-foreground border-border hover:border-primary/40 hover:text-foreground'
+                        )}
+                      >
+                        <span className={cn('w-1.5 h-1.5 rounded-full', isActive ? cfg.dot : 'bg-muted-foreground')} />
+                        {cfg.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* ── Tabs ── */}
+        {/* Tabs */}
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="mb-8">
             <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -176,25 +187,21 @@ export default function CompanyDetail() {
             <TabsTrigger value="insights">Insights</TabsTrigger>
           </TabsList>
 
-          {/* ── Overview ── */}
+          {/* Overview */}
           <TabsContent value="overview">
             <div className="grid md:grid-cols-2 gap-6">
-              {/* About */}
               <div className="rounded-2xl bg-secondary/30 border border-border p-7">
                 <h3 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-primary" />
-                  About
+                  <Building2 className="w-5 h-5 text-primary" /> About
                 </h3>
                 <p className="text-base text-muted-foreground leading-relaxed" style={{ lineHeight: 1.6 }}>
                   {company.description || company.about || 'No description provided.'}
                 </p>
               </div>
 
-              {/* Quick Facts */}
               <div className="rounded-2xl bg-card border border-border p-7 shadow-sm">
                 <h3 className="text-xl font-semibold text-foreground mb-5 flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-primary" />
-                  Quick Facts
+                  <BarChart3 className="w-5 h-5 text-primary" /> Quick Facts
                 </h3>
                 <div className="space-y-5">
                   <QuickFact icon={<Calendar className="w-4 h-4" />} label="Founded" value={company.foundedYear ? String(company.foundedYear) : '—'} />
@@ -204,19 +211,14 @@ export default function CompanyDetail() {
                 </div>
               </div>
 
-              {/* Technologies */}
               {company.technologies && company.technologies.length > 0 && (
                 <div className="md:col-span-2 rounded-2xl bg-card border border-border p-7 shadow-sm">
                   <h3 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
-                    <Cpu className="w-5 h-5 text-primary" />
-                    Technologies
+                    <Cpu className="w-5 h-5 text-primary" /> Technologies
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {company.technologies.map((tech) => (
-                      <span
-                        key={tech}
-                        className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-primary/10 text-primary hover:bg-primary/15 transition-colors"
-                      >
+                    {company.technologies.map(tech => (
+                      <span key={tech} className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-primary/10 text-primary hover:bg-primary/15 transition-colors">
                         {tech}
                       </span>
                     ))}
@@ -226,65 +228,43 @@ export default function CompanyDetail() {
             </div>
           </TabsContent>
 
-          {/* ── Links ── */}
+          {/* Links */}
           <TabsContent value="links">
             <div className="grid sm:grid-cols-2 gap-5 max-w-2xl">
               {company.careerUrl && (
-                <LinkDetailCard
-                  title="Career Site"
-                  url={company.careerUrl}
-                  description="Explore open positions"
-                  icon={<ExternalLink className="w-5 h-5" />}
-                />
+                <LinkDetailCard title="Career Site" url={company.careerUrl} description="Explore open positions" icon={<ExternalLink className="w-5 h-5" />} />
               )}
               {company.linkedinUrl && (
-                <LinkDetailCard
-                  title="LinkedIn"
-                  url={company.linkedinUrl}
-                  description="Company profile & network"
-                  icon={<Linkedin className="w-5 h-5" />}
-                />
+                <LinkDetailCard title="LinkedIn" url={company.linkedinUrl} description="Company profile & network" icon={<Linkedin className="w-5 h-5" />} />
               )}
               {company.website && (
-                <LinkDetailCard
-                  title="Website"
-                  url={company.website}
-                  description="Official company website"
-                  icon={<Globe className="w-5 h-5" />}
-                />
+                <LinkDetailCard title="Website" url={company.website} description="Official company website" icon={<Globe className="w-5 h-5" />} />
               )}
             </div>
           </TabsContent>
 
-          {/* ── Insights ── */}
+          {/* Insights */}
           <TabsContent value="insights">
             <div className="space-y-8">
-              {/* Hiring Focus */}
               <div className="rounded-2xl bg-card border border-border p-7 shadow-sm">
                 <h3 className="text-xl font-semibold text-foreground mb-5 flex items-center gap-2">
-                  <Brain className="w-5 h-5 text-primary" />
-                  Hiring Focus
+                  <Brain className="w-5 h-5 text-primary" /> Hiring Focus
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {insights.focusAreas.map((area) => (
-                    <span
-                      key={area}
-                      className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-primary/8 text-primary border border-primary/15 hover:bg-primary/15 hover:border-primary/30 transition-all cursor-default"
-                    >
+                  {insights.focusAreas.map(area => (
+                    <span key={area} className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-primary/8 text-primary border border-primary/15 hover:bg-primary/15 hover:border-primary/30 transition-all cursor-default">
                       {area}
                     </span>
                   ))}
                 </div>
               </div>
 
-              {/* Tech Strength */}
               <div className="rounded-2xl bg-card border border-border p-7 shadow-sm">
                 <h3 className="text-xl font-semibold text-foreground mb-5 flex items-center gap-2">
-                  <Server className="w-5 h-5 text-primary" />
-                  Tech Strength
+                  <Server className="w-5 h-5 text-primary" /> Tech Strength
                 </h3>
                 <div className="space-y-5">
-                  {insights.strengths.map((s) => (
+                  {insights.strengths.map(s => (
                     <div key={s.label} className="space-y-1.5">
                       <div className="flex justify-between items-center text-sm">
                         <span className="font-medium text-foreground">{s.label}</span>
@@ -296,18 +276,13 @@ export default function CompanyDetail() {
                 </div>
               </div>
 
-              {/* Global Presence */}
               <div className="rounded-2xl bg-card border border-border p-7 shadow-sm">
                 <h3 className="text-xl font-semibold text-foreground mb-5 flex items-center gap-2">
-                  <Globe className="w-5 h-5 text-primary" />
-                  Global Presence
+                  <Globe className="w-5 h-5 text-primary" /> Global Presence
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {insights.regions.map((region) => (
-                    <span
-                      key={region}
-                      className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-accent/10 text-accent border border-accent/15"
-                    >
+                  {insights.regions.map(region => (
+                    <span key={region} className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-accent/10 text-accent border border-accent/15">
                       {region}
                     </span>
                   ))}
@@ -320,8 +295,6 @@ export default function CompanyDetail() {
     </PageLayout>
   );
 }
-
-/* ── Sub-components ── */
 
 function QuickFact({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
@@ -337,12 +310,8 @@ function QuickFact({ icon, label, value }: { icon: React.ReactNode; label: strin
 
 function LinkDetailCard({ title, url, description, icon }: { title: string; url: string; description: string; icon: React.ReactNode }) {
   return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group flex items-center gap-4 p-5 rounded-2xl border border-border bg-card hover:border-accent/50 hover:shadow-md transition-all duration-300"
-    >
+    <a href={url} target="_blank" rel="noopener noreferrer"
+      className="group flex items-center gap-4 p-5 rounded-2xl border border-border bg-card hover:border-accent/50 hover:shadow-md transition-all duration-300">
       <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
         {icon}
       </div>
