@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { 
   ArrowLeft, Upload, Palette, Type, 
   Image, Building2, Globe, ChevronRight, LayoutDashboard,
-  Settings2, Paintbrush
+  Settings2, Paintbrush, Rocket   // ← add Rocket here
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -250,6 +250,27 @@ export default function Customize() {
                   </Link>
                 </div>
               </div>
+             
+              <Link to="/admin/indian-startups" className="block">
+                    <div className="rounded-2xl border border-border/40 bg-card p-5 hover:border-orange-500/50 transition-all group cursor-pointer">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-11 h-11 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+                            <Rocket className="w-5 h-5 text-orange-500" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-foreground group-hover:text-orange-500 transition-colors">
+                              Manage Indian Startups
+                            </h4>
+                            <p className="text-sm text-muted-foreground">
+                              Add D2C startups • Template import • Bulk CSV
+                            </p>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-orange-500 transition-colors" />
+                      </div>
+                    </div>
+                  </Link>
             )}
 
             {/* Appearance Section */}
