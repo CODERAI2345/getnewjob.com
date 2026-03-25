@@ -23,40 +23,139 @@ const industries = [
 
 const companySizes = ['All', '1-10', '11-50', '51-200', '201-500', '501-1000', '1001-5000', '5000+'];
 
-type CategoryTab = 'all' | 'startups' | 'indian' | 'abroad' | 'learning' | 'important';
-
-const categoryTabs: { id: CategoryTab; label: string; icon: React.ElementType }[] = [
-  { id: 'all', label: 'All Companies', icon: Building2 },
-  { id: 'startups', label: 'Startups (Global)', icon: Rocket },
-  { id: 'indian', label: 'Indian Companies', icon: MapPin },
-  { id: 'abroad', label: 'Abroad Portals', icon: Globe },
-  { id: 'learning', label: 'Learning Portals', icon: BookOpen },
-  { id: 'important', label: 'Important Info', icon: Star },
+const sectors = [
+  'All', 'Fintech', 'Healthtech', 'Edtech', 'SaaS', 'D2C', 'E-commerce',
+  'Logistics', 'AI/ML', 'Cybersecurity', 'Gaming', 'HR Tech', 'LegalTech',
+  'Proptech', 'CleanTech', 'Deeptech', 'Media & Entertainment', 'Other',
 ];
 
+type CategoryTab =
+  | 'all'
+  | 'startups'
+  | 'indian'
+  | 'unicorns'
+  | 'midlevel'
+  | 'mnc'
+  | 'product'
+  | 'funded'
+  | 'abroad'
+  | 'learning'
+  | 'important';
+
+const categoryTabs: { id: CategoryTab; label: string; icon: React.ElementType }[] = [
+  { id: 'all',       label: 'All Companies',      icon: Building2 },
+  { id: 'unicorns',  label: 'Indian Unicorns 🦄',  icon: Rocket },
+  { id: 'indian',    label: 'Indian Companies',    icon: MapPin },
+  { id: 'midlevel',  label: 'Mid-level',           icon: Building2 },
+  { id: 'mnc',       label: 'MNCs',                icon: Globe },
+  { id: 'product',   label: 'Product-based',       icon: Star },
+  { id: 'funded',    label: 'Well Funded',         icon: BookOpen },
+  { id: 'startups',  label: 'Startups (Global)',   icon: Rocket },
+  { id: 'abroad',    label: 'Abroad Portals',      icon: Globe },
+  { id: 'learning',  label: 'Learning Portals',    icon: BookOpen },
+  { id: 'important', label: 'Important Info',      icon: Star },
+];
+
+const INDIAN_CITIES = [
+  'bangalore', 'mumbai', 'delhi', 'hyderabad', 'chennai', 'pune',
+  'kolkata', 'ahmedabad', 'noida', 'gurugram', 'gurgaon',
+];
+
+const KNOWN_UNICORNS = [
+  'byju', 'oyo', 'paytm', 'ola', 'swiggy', 'zomato', 'razorpay', 'cred', 'meesho',
+  'nykaa', 'zepto', 'groww', 'physicswallah', 'physics wallah', 'delhivery', 'mamaearth',
+  'vedantu', 'unacademy', 'cars24', 'udaan', 'lenskart', 'moglix', 'infra.market',
+  'cleartax', 'browserstack', 'postman', 'freshworks', 'innovaccer', 'darwinbox',
+  'zenoti', 'chargebee', 'hasura', 'leadsquared', 'spinny', 'slice', 'stashfin',
+  'open', 'rapido', 'rebel foods', 'boat', 'blackbuck', 'shiprocket', 'mfine',
+];
+
+const KNOWN_MNCS = [
+  'microsoft', 'google', 'amazon', 'apple', 'meta', 'ibm', 'oracle', 'sap',
+  'accenture', 'deloitte', 'capgemini', 'infosys', 'wipro', 'tcs', 'hcl',
+  'cognizant', 'tech mahindra', 'adobe', 'salesforce', 'servicenow', 'vmware',
+  'cisco', 'intel', 'qualcomm', 'nvidia', 'samsung', 'lg', 'sony', 'philips',
+  'siemens', 'bosch', 'honeywell', 'ge', 'jpmorgan', 'goldman sachs', 'morgan stanley',
+  'deutsche bank', 'hsbc', 'ubs', 'pwc', 'kpmg', 'ernst', 'mckinsey', 'bcg', 'bain',
+];
+
+function isIndianCompany(c: Company): boolean {
+  const country = c.hqCountry?.toLowerCase() || '';
+  const city = c.hqCity?.toLowerCase() || '';
+  return country.includes('india') || INDIAN_CITIES.some(ci => city.includes(ci));
+}
+
 function filterByCategory(companies: Company[], category: CategoryTab): Company[] {
+  const nameLower = (c: Company) => c.name.toLowerCase();
+
   switch (category) {
+    case 'unicorns':
+      return companies.filter(c =>
+        c.isUnicorn === true ||
+        c.companyType === 'unicorn' ||
+        (isIndianCompany(c) && (
+          KNOWN_UNICORNS.some(u => nameLower(c).includes(u)) ||
+          c.fundingStage === 'series-d+' ||
+          c.fundingStage === 'ipo' ||
+          c.stage?.toLowerCase().includes('unicorn')
+        ))
+      );
+
+    case 'midlevel':
+      return companies.filter(c =>
+        c.companyType === 'service' ||
+        ['201-500', '501-1000', '1001-5000'].includes(c.companySize || '') ||
+        (isIndianCompany(c) &&
+          !KNOWN_MNCS.some(m => nameLower(c).includes(m)) &&
+          !KNOWN_UNICORNS.some(u => nameLower(c).includes(u))
+        )
+      );
+
+    case 'mnc':
+      return companies.filter(c =>
+        c.companyType === 'mnc' ||
+        KNOWN_MNCS.some(m => nameLower(c).includes(m)) ||
+        (c.companySize === '5000+' && !isIndianCompany(c)) ||
+        c.companySize === '10001+'
+      );
+
+    case 'product':
+      return companies.filter(c =>
+        c.companyType === 'product' ||
+        c.revenueModel === 'b2b' || c.revenueModel === 'b2c' ||
+        c.description?.toLowerCase().includes('product') ||
+        c.industry?.toLowerCase().includes('saas') ||
+        c.industry?.toLowerCase().includes('software') ||
+        c.notableProducts != null
+      );
+
+    case 'funded':
+      return companies.filter(c =>
+        c.fundingAmount != null ||
+        ['series-b', 'series-c', 'series-d+', 'ipo'].includes(c.fundingStage || '') ||
+        c.stage?.toLowerCase().includes('series b') ||
+        c.stage?.toLowerCase().includes('series c') ||
+        c.stage?.toLowerCase().includes('series d') ||
+        c.stage?.toLowerCase().includes('ipo')
+      );
+
     case 'startups':
       return companies.filter(c =>
+        c.companyType === 'startup' ||
         c.stage?.toLowerCase().includes('series') ||
         c.stage?.toLowerCase().includes('seed') ||
         c.stage?.toLowerCase().includes('startup') ||
         c.companySize === '1-10' || c.companySize === '11-50' || c.companySize === '51-200'
       );
+
     case 'indian':
-      return companies.filter(c =>
-        c.hqCountry?.toLowerCase().includes('india') ||
-        c.hqCity?.toLowerCase().includes('bangalore') ||
-        c.hqCity?.toLowerCase().includes('mumbai') ||
-        c.hqCity?.toLowerCase().includes('delhi') ||
-        c.hqCity?.toLowerCase().includes('hyderabad') ||
-        c.hqCity?.toLowerCase().includes('chennai') ||
-        c.hqCity?.toLowerCase().includes('pune')
-      );
+      return companies.filter(isIndianCompany);
+
     case 'abroad':
       return companies.filter(c =>
         c.hqCountry && !c.hqCountry.toLowerCase().includes('india')
       );
+
     case 'learning':
       return companies.filter(c =>
         c.industry?.toLowerCase().includes('education') ||
@@ -64,8 +163,10 @@ function filterByCategory(companies: Company[], category: CategoryTab): Company[
         c.description?.toLowerCase().includes('learning') ||
         c.description?.toLowerCase().includes('training')
       );
+
     case 'important':
       return companies.filter(c => c.isFavorite || c.isPinned);
+
     default:
       return companies;
   }
@@ -77,6 +178,7 @@ export default function Companies() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState('All');
   const [selectedSize, setSelectedSize] = useState('All');
+  const [selectedSector, setSelectedSector] = useState('All');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [activeCategory, setActiveCategory] = useState<CategoryTab>('all');
 
@@ -87,10 +189,12 @@ export default function Companies() {
       const matchesSearch =
         company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         company.industry?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        company.sector?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         company.technologies?.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesIndustry = selectedIndustry === 'All' || company.industry === selectedIndustry;
       const matchesSize = selectedSize === 'All' || company.companySize === selectedSize;
-      return matchesSearch && matchesIndustry && matchesSize;
+      const matchesSector = selectedSector === 'All' || company.sector === selectedSector;
+      return matchesSearch && matchesIndustry && matchesSize && matchesSector;
     });
 
     result.sort((a, b) => {
@@ -102,15 +206,20 @@ export default function Companies() {
         case 'z-a': return b.name.localeCompare(a.name);
         case 'newest': return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         case 'oldest': return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-        case 'size':
+        case 'size': {
           const sizeOrder = ['5000+', '1001-5000', '501-1000', '201-500', '51-200', '11-50', '1-10'];
           return sizeOrder.indexOf(a.companySize || '') - sizeOrder.indexOf(b.companySize || '');
+        }
+        case 'funding': {
+          const fundOrder = ['ipo', 'acquired', 'series-d+', 'series-c', 'series-b', 'series-a', 'seed', 'bootstrapped'];
+          return fundOrder.indexOf(a.fundingStage || '') - fundOrder.indexOf(b.fundingStage || '');
+        }
         default: return 0;
       }
     });
 
     return result;
-  }, [companies, searchQuery, selectedIndustry, selectedSize, sortBy, activeCategory]);
+  }, [companies, searchQuery, selectedIndustry, selectedSize, selectedSector, sortBy, activeCategory]);
 
   return (
     <PageLayout>
@@ -172,6 +281,17 @@ export default function Companies() {
               </SelectContent>
             </Select>
 
+            <Select value={selectedSector} onValueChange={setSelectedSector}>
+              <SelectTrigger className="w-[160px] rounded-xl">
+                <SelectValue placeholder="Sector" />
+              </SelectTrigger>
+              <SelectContent>
+                {sectors.map((s) => (
+                  <SelectItem key={s} value={s}>{s === 'All' ? 'All Sectors' : s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <Select value={selectedSize} onValueChange={setSelectedSize}>
               <SelectTrigger className="w-[140px] rounded-xl">
                 <SelectValue placeholder="Size" />
@@ -186,7 +306,7 @@ export default function Companies() {
             </Select>
 
             <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
-              <SelectTrigger className="w-[130px] rounded-xl">
+              <SelectTrigger className="w-[140px] rounded-xl">
                 <ArrowUpDown className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="Sort" />
               </SelectTrigger>
@@ -195,7 +315,8 @@ export default function Companies() {
                 <SelectItem value="oldest">Oldest</SelectItem>
                 <SelectItem value="a-z">A-Z</SelectItem>
                 <SelectItem value="z-a">Z-A</SelectItem>
-                <SelectItem value="size">Size</SelectItem>
+                <SelectItem value="size">By Size</SelectItem>
+                <SelectItem value="funding">By Funding</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -278,6 +399,31 @@ export default function Companies() {
                   </p>
 
                   <div className="flex flex-wrap gap-2">
+                    {(company.isUnicorn || company.companyType === 'unicorn') && (
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/30 text-purple-200 backdrop-blur-sm border border-purple-400/30">
+                        🦄 Unicorn
+                      </span>
+                    )}
+                    {company.companyType === 'mnc' && (
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/30 text-blue-200 backdrop-blur-sm border border-blue-400/30">
+                        🌐 MNC
+                      </span>
+                    )}
+                    {company.companyType === 'product' && (
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-500/30 text-green-200 backdrop-blur-sm border border-green-400/30">
+                        📦 Product
+                      </span>
+                    )}
+                    {company.fundingStage && company.fundingStage !== 'bootstrapped' && (
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-200 backdrop-blur-sm border border-yellow-400/20">
+                        💰 {company.fundingStage.toUpperCase()}
+                      </span>
+                    )}
+                    {company.sector && (
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-white/80 backdrop-blur-sm border border-white/10">
+                        {company.sector}
+                      </span>
+                    )}
                     {company.industry && (
                       <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/15 text-white/90 backdrop-blur-sm">
                         {company.industry}
