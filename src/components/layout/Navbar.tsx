@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 const navLinks = [
-  { href: '/', label: 'Home' },
+ { href: '/', label: 'Home' },
   { href: '/portals', label: 'Portals' },
   { href: '/companies', label: 'Companies' },
-  { href: '/indian-startups', label: '🚀 D2C Startups' },
+  { href: '/indian-startups', label: '🚀 Indian Startups' },
 ];
 
 interface NavbarProps {
