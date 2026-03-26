@@ -9,12 +9,14 @@ export interface IndianStartup {
   sector: string;
   website?: string;
   careerUrl?: string;
+  linkedinUrl?: string;
   logoUrl?: string;
   brandColor?: string;
   companySize?: string;
   foundedYear?: number;
   hqCity?: string;
   technologies?: string[];
+  rolesHiring?: string[];
   isFeatured: boolean;
   createdAt: string;
   updatedAt: string;
@@ -29,12 +31,14 @@ function mapRow(r: any): IndianStartup {
     sector: r.sector || 'others',
     website: r.website,
     careerUrl: r.career_url,
+    linkedinUrl: r.linkedin_url,
     logoUrl: r.logo_url,
     brandColor: r.brand_color,
     companySize: r.company_size,
     foundedYear: r.founded_year,
     hqCity: r.hq_city,
     technologies: r.technologies,
+    rolesHiring: r.roles_hiring,
     isFeatured: r.is_featured ?? false,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -49,12 +53,14 @@ function toDbRow(data: Partial<IndianStartup>): any {
   if (data.sector !== undefined) row.sector = data.sector;
   if (data.website !== undefined) row.website = data.website;
   if (data.careerUrl !== undefined) row.career_url = data.careerUrl;
+  if (data.linkedinUrl !== undefined) row.linkedin_url = data.linkedinUrl;
   if (data.logoUrl !== undefined) row.logo_url = data.logoUrl;
   if (data.brandColor !== undefined) row.brand_color = data.brandColor;
   if (data.companySize !== undefined) row.company_size = data.companySize;
   if (data.foundedYear !== undefined) row.founded_year = data.foundedYear;
   if (data.hqCity !== undefined) row.hq_city = data.hqCity;
   if (data.technologies !== undefined) row.technologies = data.technologies;
+  if (data.rolesHiring !== undefined) row.roles_hiring = data.rolesHiring;
   if (data.isFeatured !== undefined) row.is_featured = data.isFeatured;
   return row;
 }
