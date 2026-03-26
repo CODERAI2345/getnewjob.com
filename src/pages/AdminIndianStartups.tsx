@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowLeft, Search, Edit2, Trash2, Sparkles, PenLine,
-  Plus, X, Loader2, Download,
+  Plus, X, Loader2, Download, FileText,
 } from 'lucide-react';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
@@ -31,23 +31,22 @@ const BLANK_FORM = {
   foundedYear: '', hqCity: '', technologies: '', rolesHiring: '',
 };
 
-const BLANK_MANUAL = { ...BLANK_FORM };
-
 const CSV_TEMPLATE =
-  'name,tagline,description,sector,website,career_url,logo_url,brand_color,company_size,founded_year,hq_city,technologies,roles_hiring\n' +
-  '"Eggoz Nutrition","Premium farm-fresh eggs & nutrition","India\'s leading egg brand.","food","https://eggoz.in","https://eggoz.in/careers","","#FF6B35","51-200",2017,"Gurugram","React,Node.js","Software Engineer,Data Analyst"';
+  'name,sector,website,hq_city,company_size,roles_hiring\n' +
+  '"Eggoz Nutrition","food","https://eggoz.in","Gurugram","51-200","Software Engineer,Data Analyst"\n' +
+  '"Zepto","food","https://zepto.com","Mumbai","1001-5000","Product Manager,SDE-2,Data Scientist"';
 
 function mapIndustryToSector(industry?: string): string {
   if (!industry) return 'others';
   const i = industry.toLowerCase();
-  if (i.includes('food') || i.includes('beverage') || i.includes('restaurant')) return 'food';
-  if (i.includes('health') || i.includes('wellness') || i.includes('pharma') || i.includes('medical')) return 'health';
-  if (i.includes('beauty') || i.includes('cosmetic') || i.includes('personal care')) return 'beauty';
+  if (i.includes('food') || i.includes('beverage') || i.includes('restaurant') || i.includes('fmcg')) return 'food';
+  if (i.includes('health') || i.includes('wellness') || i.includes('pharma') || i.includes('medical') || i.includes('dental')) return 'health';
+  if (i.includes('beauty') || i.includes('cosmetic') || i.includes('personal care') || i.includes('skincare')) return 'beauty';
   if (i.includes('fashion') || i.includes('apparel') || i.includes('clothing') || i.includes('footwear')) return 'fashion';
-  if (i.includes('home') || i.includes('furnish') || i.includes('decor')) return 'home';
-  if (i.includes('fintech') || i.includes('finance') || i.includes('payment') || i.includes('banking')) return 'fintech';
-  if (i.includes('edtech') || i.includes('education') || i.includes('learning')) return 'edtech';
-  if (i.includes('saas') || i.includes('software') || i.includes('cloud') || i.includes('tech')) return 'saas';
+  if (i.includes('home') || i.includes('furnish') || i.includes('decor') || i.includes('interior')) return 'home';
+  if (i.includes('fintech') || i.includes('finance') || i.includes('payment') || i.includes('banking') || i.includes('insurance')) return 'fintech';
+  if (i.includes('edtech') || i.includes('education') || i.includes('learning') || i.includes('ed-tech')) return 'edtech';
+  if (i.includes('saas') || i.includes('software') || i.includes('cloud') || i.includes('tech') || i.includes('ai')) return 'saas';
   return 'others';
 }
 
@@ -62,7 +61,7 @@ function PreviewRow({ label, value }: { label: string; value?: string }) {
 }
 
 function ManualEntryForm({ onSave }: { onSave: (data: Partial<IndianStartup>) => Promise<boolean> }) {
-  const [form, setForm] = useState({ ...BLANK_MANUAL });
+  const [form, setForm] = useState({ ...BLANK_FORM });
   const [loading, setLoading] = useState(false);
   const update = (f: string, v: string) => setForm(p => ({ ...p, [f]: v }));
 
@@ -80,7 +79,7 @@ function ManualEntryForm({ onSave }: { onSave: (data: Partial<IndianStartup>) =>
       technologies: form.technologies ? form.technologies.split(',').map(t => t.trim()).filter(Boolean) : undefined,
       rolesHiring: form.rolesHiring ? form.rolesHiring.split(',').map(t => t.trim()).filter(Boolean) : undefined,
     });
-    if (ok) { toast.success(`"${form.name}" added!`); setForm({ ...BLANK_MANUAL }); }
+    if (ok) { toast.success(`"${form.name}" added!`); setForm({ ...BLANK_FORM }); }
     else toast.error('Failed to save');
     setLoading(false);
   };
@@ -130,10 +129,13 @@ export default function AdminIndianStartups() {
   const [aiText, setAiText] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [aiParsed, setAiParsed] = useState<Partial<IndianStartup> | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
-  // Bulk CSV state
+  // Bulk state
   const [csvText, setCsvText] = useState('');
   const [csvLoading, setCsvLoading] = useState(false);
+  const [namesText, setNamesText] = useState('');
+  const [namesLoading, setNamesLoading] = useState(false);
 
   const updateForm = (field: string, value: string) => setForm(p => ({ ...p, [field]: value }));
 
@@ -167,16 +169,10 @@ export default function AdminIndianStartups() {
     if (!form.name.trim()) { toast.error('Name is required'); return; }
     setFormLoading(true);
     const data: Partial<IndianStartup> = {
-      name: form.name,
-      tagline: form.tagline || undefined,
-      description: form.description || undefined,
-      sector: form.sector,
-      website: form.website || undefined,
-      careerUrl: form.careerUrl || undefined,
-      linkedinUrl: form.linkedinUrl || undefined,
-      logoUrl: form.logoUrl || undefined,
-      brandColor: form.brandColor || undefined,
-      companySize: form.companySize || undefined,
+      name: form.name, tagline: form.tagline || undefined, description: form.description || undefined,
+      sector: form.sector, website: form.website || undefined, careerUrl: form.careerUrl || undefined,
+      linkedinUrl: form.linkedinUrl || undefined, logoUrl: form.logoUrl || undefined,
+      brandColor: form.brandColor || undefined, companySize: form.companySize || undefined,
       foundedYear: form.foundedYear ? parseInt(form.foundedYear) : undefined,
       hqCity: form.hqCity || undefined,
       technologies: form.technologies ? form.technologies.split(',').map(t => t.trim()).filter(Boolean) : undefined,
@@ -188,21 +184,23 @@ export default function AdminIndianStartups() {
     setFormLoading(false);
   };
 
-  // ── Real AI Fetch using same supabase function as companies ──────────────
-  const handleAIFetch = async () => {
+  // ── AI Fetch: extract then DIRECTLY save (no preview step) ───────────────
+  const handleAIExtractAndSave = async () => {
     if (!aiText.trim()) return;
     setAiLoading(true);
     setAiParsed(null);
+    setShowPreview(false);
     try {
       const { data, error } = await supabase.functions.invoke('parse-company', {
         body: { text: aiText.trim() },
       });
       if (error) throw error;
       if (!data || !data.name) {
-        toast.error('Could not extract company name. Try adding more details.');
+        toast.error('Could not extract company name. Add more details and try again.');
         return;
       }
-      const parsed: Partial<IndianStartup> = {
+      // Build the startup object locally — do NOT use state to avoid stale closure
+      const startup: Partial<IndianStartup> = {
         name: data.name,
         description: data.description || undefined,
         website: data.website || undefined,
@@ -211,77 +209,123 @@ export default function AdminIndianStartups() {
         foundedYear: data.foundedYear || undefined,
         hqCity: data.hqCity || undefined,
         companySize: data.companySize || undefined,
-        technologies: data.technologies || undefined,
-        tagline: data.notableProducts ? `Known for: ${data.notableProducts}` : undefined,
+        technologies: Array.isArray(data.technologies) ? data.technologies : undefined,
+        tagline: data.notableProducts ? `Known for: ${data.notableProducts}` : (data.description ? data.description.substring(0, 80) : undefined),
         rolesHiring: data.hiringTechnologies
           ? data.hiringTechnologies.split(',').map((t: string) => t.trim()).filter(Boolean)
           : undefined,
         sector: mapIndustryToSector(data.industry),
       };
-      setAiParsed(parsed);
-      toast.success(`"${data.name}" extracted — review and confirm below.`);
+
+      if (showPreview) {
+        // Show preview first, user clicks confirm
+        setAiParsed(startup);
+        toast.success(`"${data.name}" extracted — confirm to save.`);
+      } else {
+        // Direct save — no preview
+        const ok = await addStartup(startup);
+        if (ok) {
+          toast.success(`✓ "${data.name}" saved to Indian Startups!`);
+          setAiText('');
+        } else {
+          toast.error('Save failed. Try again.');
+        }
+      }
     } catch (err: any) {
-      console.error('AI parse error:', err);
-      toast.error('AI extraction failed. Please try again.');
+      console.error('AI fetch error:', err);
+      toast.error('AI extraction failed. Check your text and try again.');
     } finally {
       setAiLoading(false);
     }
   };
 
-  const handleConfirmAI = async () => {
-    if (!aiParsed) return;
+  // Confirm from preview card — uses local captured value, not state
+  const handleConfirmSave = async (captured: Partial<IndianStartup>) => {
+    if (!captured?.name) return;
     setAiLoading(true);
-    const ok = await addStartup(aiParsed);
+    const ok = await addStartup(captured);
     if (ok) {
-      toast.success(`"${aiParsed.name}" added to Indian Startups!`);
+      toast.success(`✓ "${captured.name}" saved!`);
       setAiText('');
       setAiParsed(null);
     } else {
-      toast.error('Failed to save startup');
+      toast.error('Save failed. Try again.');
     }
     setAiLoading(false);
   };
 
-  // ── Bulk CSV ──────────────────────────────────────────────────────────────
+  // ── Simple Names Import: one name per line ───────────────────────────────
+  const handleNamesImport = async () => {
+    const names = namesText.trim().split('\n').map(n => n.trim()).filter(Boolean);
+    if (names.length === 0) { toast.error('No names found'); return; }
+    setNamesLoading(true);
+    const rows: Partial<IndianStartup>[] = names.map(name => ({ name, sector: 'others' }));
+    const ok = await importStartups(rows);
+    if (ok) {
+      toast.success(`${rows.length} startup${rows.length > 1 ? 's' : ''} added! Edit each one to fill in details.`);
+      setNamesText('');
+    } else {
+      toast.error('Import failed');
+    }
+    setNamesLoading(false);
+  };
+
+  // ── CSV Import: robust parser ────────────────────────────────────────────
   const handleCSVImport = async () => {
     if (!csvText.trim()) return;
     setCsvLoading(true);
     try {
-      const lines = csvText.trim().split('\n');
-      const rawHeaders = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
-      const rows = lines.slice(1).map(line => {
+      const lines = csvText.trim().split('\n').filter(l => l.trim());
+      if (lines.length < 2) { toast.error('CSV needs a header row and at least one data row'); return; }
+
+      // Robust CSV header parse
+      const rawHeaders = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, '').toLowerCase().replace(/ /g, '_'));
+
+      const rows: Partial<IndianStartup>[] = [];
+      for (let li = 1; li < lines.length; li++) {
+        const line = lines[li].trim();
+        if (!line) continue;
+
+        // Proper CSV value parser that handles quoted commas
         const vals: string[] = [];
         let inQuote = false, cur = '';
         for (let i = 0; i < line.length; i++) {
-          if (line[i] === '"') { inQuote = !inQuote; }
-          else if (line[i] === ',' && !inQuote) { vals.push(cur.trim()); cur = ''; }
-          else { cur += line[i]; }
+          const ch = line[i];
+          if (ch === '"') { inQuote = !inQuote; }
+          else if (ch === ',' && !inQuote) { vals.push(cur.trim().replace(/^"|"$/g, '')); cur = ''; }
+          else { cur += ch; }
         }
-        vals.push(cur.trim());
+        vals.push(cur.trim().replace(/^"|"$/g, ''));
+
         const obj: any = {};
-        rawHeaders.forEach((h, i) => { obj[h] = vals[i]?.replace(/^"|"$/g, '') || ''; });
-        return {
+        rawHeaders.forEach((h, i) => { obj[h] = (vals[i] || '').trim(); });
+
+        if (!obj.name) continue;
+        rows.push({
           name: obj.name,
           tagline: obj.tagline || undefined,
           description: obj.description || undefined,
           sector: obj.sector || 'others',
           website: obj.website || undefined,
-          careerUrl: obj.career_url || undefined,
-          logoUrl: obj.logo_url || undefined,
-          brandColor: obj.brand_color || undefined,
-          companySize: obj.company_size || undefined,
+          careerUrl: obj.career_url || obj.careerurl || undefined,
+          logoUrl: obj.logo_url || obj.logourl || undefined,
+          brandColor: obj.brand_color || obj.brandcolor || undefined,
+          companySize: obj.company_size || obj.companysize || undefined,
           foundedYear: obj.founded_year ? parseInt(obj.founded_year) : undefined,
-          hqCity: obj.hq_city || undefined,
+          hqCity: obj.hq_city || obj.city || obj.hqcity || undefined,
           technologies: obj.technologies ? obj.technologies.split(',').map((t: string) => t.trim()).filter(Boolean) : undefined,
           rolesHiring: obj.roles_hiring ? obj.roles_hiring.split(',').map((t: string) => t.trim()).filter(Boolean) : undefined,
-        } as Partial<IndianStartup>;
-      }).filter(r => r.name);
+        });
+      }
+
+      if (rows.length === 0) { toast.error('No valid rows found. Check your CSV format.'); return; }
 
       const ok = await importStartups(rows);
-      if (ok) { toast.success(`${rows.length} startups imported!`); setCsvText(''); }
-      else toast.error('Import failed');
-    } catch {
-      toast.error('Failed to parse CSV');
+      if (ok) { toast.success(`${rows.length} startup${rows.length > 1 ? 's' : ''} imported!`); setCsvText(''); }
+      else toast.error('Import failed. Check the data and try again.');
+    } catch (err) {
+      console.error('CSV error:', err);
+      toast.error('Failed to parse CSV. Check format and try again.');
     } finally {
       setCsvLoading(false);
     }
@@ -297,7 +341,7 @@ export default function AdminIndianStartups() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="font-display text-3xl font-bold text-foreground mb-2">Indian Startups Admin</h1>
-              <p className="text-muted-foreground">Add, edit or remove D2C startups. Use AI Fetch to auto-extract details.</p>
+              <p className="text-muted-foreground">Add, edit, or remove D2C startups. AI extracts and saves in one click.</p>
             </div>
             <span className="admin-badge">Admin</span>
           </div>
@@ -310,11 +354,11 @@ export default function AdminIndianStartups() {
               <Sparkles className="w-3.5 h-3.5" /> Quick Add
             </TabsTrigger>
             <TabsTrigger value="bulk" className="rounded-lg flex items-center gap-1.5">
-              <PenLine className="w-3.5 h-3.5" /> Bulk CSV
+              <FileText className="w-3.5 h-3.5" /> Bulk Import
             </TabsTrigger>
           </TabsList>
 
-          {/* ── LIST TAB ──────────────────────────────────────────────── */}
+          {/* ── STARTUPS LIST ─────────────────────────────────────── */}
           <TabsContent value="startups" className="space-y-4">
             <div className="flex gap-3">
               <div className="relative flex-1">
@@ -348,10 +392,7 @@ export default function AdminIndianStartups() {
                   <div><Label>LinkedIn URL</Label><Input type="url" value={form.linkedinUrl} onChange={e => updateForm('linkedinUrl', e.target.value)} placeholder="https://linkedin.com/company/eggoz" className="mt-1.5 rounded-xl" /></div>
                   <div><Label>Logo URL</Label><Input type="url" value={form.logoUrl} onChange={e => updateForm('logoUrl', e.target.value)} placeholder="https://..." className="mt-1.5 rounded-xl" /></div>
                   <div>
-                    <Label className="flex items-center gap-2">
-                      Brand Color
-                      {form.brandColor && <span className="w-4 h-4 rounded-full border border-border" style={{ backgroundColor: form.brandColor }} />}
-                    </Label>
+                    <Label className="flex items-center gap-2">Brand Color {form.brandColor && <span className="w-4 h-4 rounded-full border border-border" style={{ backgroundColor: form.brandColor }} />}</Label>
                     <div className="flex gap-2 mt-1.5">
                       <Input type="color" value={form.brandColor || '#000000'} onChange={e => updateForm('brandColor', e.target.value)} className="w-12 h-10 p-1 rounded-xl cursor-pointer" />
                       <Input value={form.brandColor} onChange={e => updateForm('brandColor', e.target.value)} placeholder="#FF6B35" className="flex-1 rounded-xl" />
@@ -398,9 +439,7 @@ export default function AdminIndianStartups() {
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden shrink-0"
                                 style={{ background: s.brandColor || 'linear-gradient(135deg,#f97316,#ec4899)' }}>
-                                {s.logoUrl
-                                  ? <img src={s.logoUrl} alt={s.name} className="w-full h-full object-contain" />
-                                  : <span className="text-white font-bold">{s.name.charAt(0)}</span>}
+                                {s.logoUrl ? <img src={s.logoUrl} alt={s.name} className="w-full h-full object-contain" /> : <span className="text-white font-bold">{s.name.charAt(0)}</span>}
                               </div>
                               <div>
                                 <p className="font-medium text-foreground">{s.name}</p>
@@ -421,12 +460,8 @@ export default function AdminIndianStartups() {
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center justify-end gap-1">
-                              <Button variant="ghost" size="icon" onClick={() => handleEdit(s)} className="h-8 w-8 rounded-lg hover:bg-secondary">
-                                <Edit2 className="w-4 h-4" />
-                              </Button>
-                              <Button variant="ghost" size="icon" onClick={() => handleDelete(s.id, s.name)} className="h-8 w-8 rounded-lg hover:bg-red-500/10 hover:text-red-500">
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
+                              <Button variant="ghost" size="icon" onClick={() => handleEdit(s)} className="h-8 w-8 rounded-lg hover:bg-secondary"><Edit2 className="w-4 h-4" /></Button>
+                              <Button variant="ghost" size="icon" onClick={() => handleDelete(s.id, s.name)} className="h-8 w-8 rounded-lg hover:bg-red-500/10 hover:text-red-500"><Trash2 className="w-4 h-4" /></Button>
                             </div>
                           </td>
                         </tr>
@@ -436,49 +471,36 @@ export default function AdminIndianStartups() {
                 </div>
               </div>
             ) : (
-              <div className="text-center py-16 animate-fade-in">
-                <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
-                  <Search className="w-8 h-8 text-muted-foreground" />
-                </div>
-                <h3 className="font-semibold text-lg text-foreground mb-2">
-                  {startups.length === 0 ? 'No startups yet' : 'No results'}
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  {startups.length === 0 ? 'Use Quick Add tab to add your first startup.' : 'Try adjusting your search.'}
-                </p>
-                {startups.length === 0 && (
-                  <Button onClick={() => { resetForm(); setShowForm(true); }} className="btn-gradient rounded-xl">
-                    <Plus className="w-4 h-4 mr-2" /> Add First Startup
-                  </Button>
-                )}
+              <div className="text-center py-16">
+                <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4"><Search className="w-8 h-8 text-muted-foreground" /></div>
+                <h3 className="font-semibold text-lg text-foreground mb-2">{startups.length === 0 ? 'No startups yet' : 'No results'}</h3>
+                <p className="text-muted-foreground mb-4">{startups.length === 0 ? 'Use Quick Add tab to add your first startup.' : 'Try adjusting your search.'}</p>
+                {startups.length === 0 && <Button onClick={() => { resetForm(); setShowForm(true); }} className="btn-gradient rounded-xl"><Plus className="w-4 h-4 mr-2" />Add First Startup</Button>}
               </div>
             )}
           </TabsContent>
 
-          {/* ── QUICK ADD TAB ─────────────────────────────────────────── */}
+          {/* ── QUICK ADD ──────────────────────────────────────────── */}
           <TabsContent value="quick-add">
             <div className="bg-card rounded-2xl border border-border/50 p-6 animate-fade-in space-y-5">
               <div>
                 <h3 className="font-display text-lg font-semibold text-foreground mb-1">Quick Add Startup</h3>
                 <p className="text-sm text-muted-foreground">
-                  Paste any text about a startup — website copy, LinkedIn about, news article — and AI will extract all details automatically.
+                  Paste any text about a startup and AI extracts all details. Choose between AI Fetch or fill in manually.
                 </p>
               </div>
 
               <Tabs defaultValue="ai" className="space-y-5">
                 <TabsList className="rounded-xl">
-                  <TabsTrigger value="ai" className="rounded-lg flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" /> AI Fetch
-                  </TabsTrigger>
-                  <TabsTrigger value="manual" className="rounded-lg flex items-center gap-1.5">
-                    <PenLine className="w-3.5 h-3.5" /> Manual Entry
-                  </TabsTrigger>
+                  <TabsTrigger value="ai" className="rounded-lg flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5" />AI Fetch</TabsTrigger>
+                  <TabsTrigger value="manual" className="rounded-lg flex items-center gap-1.5"><PenLine className="w-3.5 h-3.5" />Manual Entry</TabsTrigger>
                 </TabsList>
 
+                {/* ── AI FETCH ── */}
                 <TabsContent value="ai" className="space-y-4">
                   <div className="rounded-xl bg-muted/40 border border-border p-4 text-sm text-muted-foreground">
                     <p className="font-medium text-foreground mb-1">📋 What to paste</p>
-                    <p>Copy text from the startup's website About page, LinkedIn company info, Crunchbase profile, or any news article. The more details the better — AI will extract name, city, sector, roles hiring, technologies, and more.</p>
+                    <p>Copy from the startup's LinkedIn About, Crunchbase, website, or any article. AI extracts name, city, sector, roles hiring, tech stack automatically.</p>
                   </div>
 
                   <div>
@@ -487,22 +509,42 @@ export default function AdminIndianStartups() {
                       id="ai-input"
                       value={aiText}
                       onChange={e => setAiText(e.target.value)}
-                      placeholder={`Example:\n\nEggoz is India's leading D2C egg brand founded in 2017. Headquartered in Gurugram, they deliver farm-fresh eggs across 20+ cities. Series B funded. Hiring Software Engineers, Data Scientists, Product Managers. Tech stack: React, Node.js, AWS, Python.`}
-                      className="mt-1.5 rounded-xl min-h-[180px]"
-                      rows={8}
+                      placeholder={`Example:\n\nToothsi is a health-tech startup founded in 2018, headquartered in Mumbai. They provide at-home dental alignment using clear aligners. Series B funded. Hiring: Software Engineers, React developers, Node.js, Python, Android, iOS, Data Science. Tech: 3D Printing, AI, Mobile App, E-commerce.`}
+                      className="mt-1.5 rounded-xl min-h-[160px]"
+                      rows={7}
                     />
                   </div>
 
-                  <Button onClick={handleAIFetch} disabled={aiLoading || !aiText.trim()} className="btn-gradient rounded-xl">
+                  {/* Toggle: Direct Save vs Preview */}
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 border border-border">
+                    <input
+                      type="checkbox"
+                      id="show-preview"
+                      checked={showPreview}
+                      onChange={e => setShowPreview(e.target.checked)}
+                      className="w-4 h-4 rounded accent-primary cursor-pointer"
+                    />
+                    <Label htmlFor="show-preview" className="text-sm cursor-pointer font-normal">
+                      Show preview before saving <span className="text-muted-foreground">(uncheck to save instantly)</span>
+                    </Label>
+                  </div>
+
+                  <Button
+                    onClick={handleAIExtractAndSave}
+                    disabled={aiLoading || !aiText.trim()}
+                    className="btn-gradient rounded-xl"
+                  >
                     {aiLoading
-                      ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Extracting with AI...</>
-                      : <><Sparkles className="w-4 h-4 mr-2" />Extract & Preview</>}
+                      ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{showPreview ? 'Extracting...' : 'Extracting & Saving...'}</>
+                      : <><Sparkles className="w-4 h-4 mr-2" />{showPreview ? 'Extract & Preview' : 'Extract & Save'}</>
+                    }
                   </Button>
 
-                  {aiParsed && (
+                  {/* Preview card — only shown when showPreview is on */}
+                  {aiParsed && showPreview && (
                     <div className="rounded-xl border border-primary/30 bg-primary/5 p-5 space-y-4 animate-fade-in">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm font-semibold text-primary">✓ Extracted — review before saving</p>
+                        <p className="text-sm font-semibold text-primary">✓ Extracted — confirm to save</p>
                         <button onClick={() => setAiParsed(null)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
                       </div>
                       <div className="grid grid-cols-2 gap-3 text-sm">
@@ -515,28 +557,29 @@ export default function AdminIndianStartups() {
                         <div className="col-span-2"><PreviewRow label="Description" value={aiParsed.description} /></div>
                         {aiParsed.rolesHiring && aiParsed.rolesHiring.length > 0 && (
                           <div className="col-span-2">
-                            <p className="text-xs text-muted-foreground mb-1">Roles Hiring</p>
+                            <p className="text-xs text-muted-foreground mb-1.5">Roles Hiring</p>
                             <div className="flex flex-wrap gap-1.5">
-                              {aiParsed.rolesHiring.map((r, i) => (
-                                <span key={i} className="px-2 py-0.5 rounded-full text-xs bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300">{r}</span>
-                              ))}
+                              {aiParsed.rolesHiring.map((r, i) => <span key={i} className="px-2 py-0.5 rounded-full text-xs bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300">{r}</span>)}
                             </div>
                           </div>
                         )}
                         {aiParsed.technologies && aiParsed.technologies.length > 0 && (
                           <div className="col-span-2">
-                            <p className="text-xs text-muted-foreground mb-1">Technologies</p>
+                            <p className="text-xs text-muted-foreground mb-1.5">Technologies</p>
                             <div className="flex flex-wrap gap-1.5">
-                              {aiParsed.technologies.map((t, i) => (
-                                <span key={i} className="px-2 py-0.5 rounded-full text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">{t}</span>
-                              ))}
+                              {aiParsed.technologies.map((t, i) => <span key={i} className="px-2 py-0.5 rounded-full text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">{t}</span>)}
                             </div>
                           </div>
                         )}
                       </div>
                       <div className="flex gap-3 pt-2">
                         <Button variant="outline" onClick={() => setAiParsed(null)} className="rounded-xl">Dismiss</Button>
-                        <Button onClick={handleConfirmAI} disabled={aiLoading} className="btn-gradient rounded-xl">
+                        {/* Pass captured value directly to avoid stale state */}
+                        <Button
+                          onClick={() => { const captured = aiParsed; setAiParsed(null); handleConfirmSave(captured); }}
+                          disabled={aiLoading}
+                          className="btn-gradient rounded-xl"
+                        >
                           {aiLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</> : '✓ Confirm & Save'}
                         </Button>
                       </div>
@@ -544,54 +587,96 @@ export default function AdminIndianStartups() {
                   )}
                 </TabsContent>
 
-                <TabsContent value="manual" className="space-y-4">
+                <TabsContent value="manual">
                   <ManualEntryForm onSave={addStartup} />
                 </TabsContent>
               </Tabs>
             </div>
           </TabsContent>
 
-          {/* ── BULK CSV TAB ──────────────────────────────────────────── */}
+          {/* ── BULK IMPORT ─────────────────────────────────────────── */}
           <TabsContent value="bulk">
-            <div className="bg-card rounded-2xl border border-border/50 p-6 animate-fade-in space-y-5">
+            <div className="bg-card rounded-2xl border border-border/50 p-6 animate-fade-in space-y-6">
               <div>
-                <h3 className="font-display text-lg font-semibold text-foreground mb-1">Bulk Import via CSV</h3>
-                <p className="text-sm text-muted-foreground">Download the template, fill in startup details, paste the CSV data below and import all at once.</p>
+                <h3 className="font-display text-lg font-semibold text-foreground mb-1">Bulk Import</h3>
+                <p className="text-sm text-muted-foreground">Two easy ways to add many startups at once.</p>
               </div>
 
-              <div className="rounded-xl bg-muted/40 border border-border p-4">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Required CSV Columns</p>
-                <code className="text-xs text-foreground font-mono leading-relaxed break-all">
-                  name, tagline, description, sector, website, career_url, logo_url, brand_color, company_size, founded_year, hq_city, technologies, roles_hiring
-                </code>
-                <button
-                  onClick={() => {
-                    const blob = new Blob([CSV_TEMPLATE], { type: 'text/csv' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a'); a.href = url; a.download = 'startups-template.csv'; a.click();
-                    URL.revokeObjectURL(url);
-                  }}
-                  className="mt-3 flex items-center gap-1.5 text-xs text-primary hover:underline"
-                >
-                  <Download className="w-3.5 h-3.5" /> Download CSV template
-                </button>
-              </div>
+              <Tabs defaultValue="names" className="space-y-5">
+                <TabsList className="rounded-xl">
+                  <TabsTrigger value="names" className="rounded-lg">📋 Names Only (Easiest)</TabsTrigger>
+                  <TabsTrigger value="csv" className="rounded-lg">📊 CSV (Full Details)</TabsTrigger>
+                </TabsList>
 
-              <div>
-                <Label>Paste CSV data here</Label>
-                <Textarea
-                  value={csvText}
-                  onChange={e => setCsvText(e.target.value)}
-                  placeholder={'name,tagline,sector,...\n"Eggoz","Fresh eggs","food",...'}
-                  className="mt-1.5 rounded-xl min-h-[200px] font-mono text-sm"
-                />
-              </div>
+                {/* ── NAMES ONLY (easiest) ── */}
+                <TabsContent value="names" className="space-y-4">
+                  <div className="rounded-xl bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 p-4">
+                    <p className="text-sm font-medium text-green-800 dark:text-green-300 mb-1">✓ Easiest way to add many startups</p>
+                    <p className="text-sm text-green-700 dark:text-green-400">Just paste startup names — one per line. They'll be created as stubs you can edit later with full details.</p>
+                  </div>
+                  <div>
+                    <Label>Startup names — one per line</Label>
+                    <Textarea
+                      value={namesText}
+                      onChange={e => setNamesText(e.target.value)}
+                      placeholder={`Eggoz Nutrition\nZepto\nMamaearth\nNykaa\nboat\nMeesho\nRazorpay\nSwiggy Instamart`}
+                      className="mt-1.5 rounded-xl min-h-[200px] font-mono text-sm"
+                    />
+                    {namesText.trim() && (
+                      <p className="text-xs text-muted-foreground mt-1.5">
+                        {namesText.trim().split('\n').filter(n => n.trim()).length} startups ready to import
+                      </p>
+                    )}
+                  </div>
+                  <Button onClick={handleNamesImport} disabled={namesLoading || !namesText.trim()} className="btn-gradient rounded-xl">
+                    {namesLoading
+                      ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Adding...</>
+                      : <><Plus className="w-4 h-4 mr-2" />Add All Names</>}
+                  </Button>
+                </TabsContent>
 
-              <Button onClick={handleCSVImport} disabled={csvLoading || !csvText.trim()} className="btn-gradient rounded-xl">
-                {csvLoading
-                  ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Importing...</>
-                  : <><PenLine className="w-4 h-4 mr-2" />Import All Rows</>}
-              </Button>
+                {/* ── CSV ── */}
+                <TabsContent value="csv" className="space-y-4">
+                  <div className="rounded-xl bg-muted/40 border border-border p-4">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">CSV Columns (comma-separated, first row = headers)</p>
+                    <code className="text-xs text-foreground font-mono leading-relaxed">
+                      name, sector, website, hq_city, company_size, roles_hiring
+                    </code>
+                    <p className="text-xs text-muted-foreground mt-2">All columns except <strong>name</strong> are optional. Sector values: food, health, beauty, fashion, home, fintech, edtech, saas, others</p>
+                    <button
+                      onClick={() => {
+                        const blob = new Blob([CSV_TEMPLATE], { type: 'text/csv' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a'); a.href = url; a.download = 'startups-template.csv'; a.click();
+                        URL.revokeObjectURL(url);
+                      }}
+                      className="mt-3 flex items-center gap-1.5 text-xs text-primary hover:underline"
+                    >
+                      <Download className="w-3.5 h-3.5" /> Download CSV template with examples
+                    </button>
+                  </div>
+
+                  <div>
+                    <Label>Paste CSV data here</Label>
+                    <Textarea
+                      value={csvText}
+                      onChange={e => setCsvText(e.target.value)}
+                      placeholder={'name,sector,website,hq_city,company_size,roles_hiring\n"Eggoz Nutrition","food","https://eggoz.in","Gurugram","51-200","Software Engineer,Data Analyst"'}
+                      className="mt-1.5 rounded-xl min-h-[200px] font-mono text-sm"
+                    />
+                    {csvText.trim() && (() => {
+                      const count = csvText.trim().split('\n').filter(l => l.trim()).length - 1;
+                      return count > 0 ? <p className="text-xs text-muted-foreground mt-1.5">{count} data row{count > 1 ? 's' : ''} detected</p> : null;
+                    })()}
+                  </div>
+
+                  <Button onClick={handleCSVImport} disabled={csvLoading || !csvText.trim()} className="btn-gradient rounded-xl">
+                    {csvLoading
+                      ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Importing...</>
+                      : <><PenLine className="w-4 h-4 mr-2" />Import from CSV</>}
+                  </Button>
+                </TabsContent>
+              </Tabs>
             </div>
           </TabsContent>
         </Tabs>
