@@ -188,4 +188,134 @@ export default function IndianStartups() {
           )}
         </div>
 
-        <p cl
+        {/* Results count */}
+        <p className="text-sm text-muted-foreground mb-4">
+          {loading ? 'Loading startups…' : `Showing ${filtered.length} of ${startups.length} startups`}
+        </p>
+
+        {/* Cards grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="rounded-2xl border border-border bg-card animate-pulse h-56" />
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <Rocket className="w-12 h-12 text-muted-foreground/40 mb-4" />
+            <p className="text-lg font-semibold text-foreground">No startups found</p>
+            <p className="text-sm text-muted-foreground mt-1">Try adjusting your search or filters</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filtered.map(startup => {
+              const status = getStatus(startup.id, 'indian_startups');
+              const isBookmarked = bookmarks.has(startup.id);
+              const bg = SECTOR_BG[startup.sector] || SECTOR_BG.others;
+
+              return (
+                <div
+                  key={startup.id}
+                  className="group relative flex flex-col rounded-2xl border border-border bg-card overflow-hidden shadow-sm hover:shadow-md transition-all duration-200"
+                >
+                  {/* Card header band */}
+                  <div
+                    className="h-2 w-full shrink-0"
+                    style={{ background: bg }}
+                  />
+
+                  <div className="flex flex-col flex-1 p-5 gap-3">
+                    {/* Top row: name + bookmark */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div
+                          className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0 shadow-sm"
+                          style={{ background: bg }}
+                        >
+                          {SECTOR_EMOJI[startup.sector] || '✦'}
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="font-semibold text-foreground text-sm leading-tight truncate">{startup.name}</h3>
+                          {startup.hqCity && (
+                            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+                              <MapPin className="w-3 h-3" />{startup.hqCity}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <button
+                        onClick={e => toggleBookmark(startup.id, e)}
+                        className={cn(
+                          'shrink-0 p-1.5 rounded-lg transition-colors',
+                          isBookmarked
+                            ? 'text-amber-500 bg-amber-50 dark:bg-amber-900/30'
+                            : 'text-muted-foreground hover:text-amber-500 hover:bg-muted'
+                        )}
+                        title={isBookmarked ? 'Remove bookmark' : 'Bookmark'}
+                      >
+                        <Bookmark className={cn('w-4 h-4', isBookmarked && 'fill-current')} />
+                      </button>
+                    </div>
+
+                    {/* Tagline */}
+                    {startup.tagline && (
+                      <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">{startup.tagline}</p>
+                    )}
+
+                    {/* Sector badge + status */}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border/60">
+                        {SECTOR_EMOJI[startup.sector] || '✦'} {SECTOR_LABELS[startup.sector] || startup.sector}
+                      </span>
+                      <StatusBadge status={status} />
+                    </div>
+
+                    {/* Roles hiring */}
+                    {startup.rolesHiring && startup.rolesHiring.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {startup.rolesHiring.slice(0, 3).map(role => (
+                          <span
+                            key={role}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs bg-primary/8 text-primary border border-primary/20 font-medium"
+                          >
+                            <Briefcase className="w-3 h-3" />{role}
+                          </span>
+                        ))}
+                        {startup.rolesHiring.length > 3 && (
+                          <span className="text-xs text-muted-foreground px-1 py-0.5">+{startup.rolesHiring.length - 3} more</span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Footer: status selector + visit button */}
+                    <div className="flex items-center justify-between gap-2 mt-auto pt-2 border-t border-border/50">
+                      <select
+                        value={status || ''}
+                        onChange={e => setStatus(startup.id, 'indian_startups', e.target.value as never)}
+                        onClick={e => e.stopPropagation()}
+                        className="text-xs rounded-lg border border-border bg-muted px-2 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+                      >
+                        <option value="">Set status</option>
+                        <option value="not_visited">Not Visited</option>
+                        <option value="visited">Visited</option>
+                        <option value="applied">Applied</option>
+                      </select>
+
+                      <button
+                        onClick={() => handleVisit(startup)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors"
+                      >
+                        Visit <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+      </div>
+    </PageLayout>
+  );
+}
