@@ -461,3 +461,141 @@ export default function AdminIndianStartups() {
               <div>
                 <h3 className="font-display text-lg font-semibold text-foreground mb-1">Quick Add Startup</h3>
                 <p className="text-sm text-muted-foreground">
+                  Paste any text about a startup — website copy, LinkedIn about, news article — and AI will extract all details automatically.
+                </p>
+              </div>
+
+              <Tabs defaultValue="ai" className="space-y-5">
+                <TabsList className="rounded-xl">
+                  <TabsTrigger value="ai" className="rounded-lg flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5" /> AI Fetch
+                  </TabsTrigger>
+                  <TabsTrigger value="manual" className="rounded-lg flex items-center gap-1.5">
+                    <PenLine className="w-3.5 h-3.5" /> Manual Entry
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="ai" className="space-y-4">
+                  <div className="rounded-xl bg-muted/40 border border-border p-4 text-sm text-muted-foreground">
+                    <p className="font-medium text-foreground mb-1">📋 What to paste</p>
+                    <p>Copy text from the startup's website About page, LinkedIn company info, Crunchbase profile, or any news article. The more details the better — AI will extract name, city, sector, roles hiring, technologies, and more.</p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="ai-input">Paste startup information</Label>
+                    <Textarea
+                      id="ai-input"
+                      value={aiText}
+                      onChange={e => setAiText(e.target.value)}
+                      placeholder={`Example:\n\nEggoz is India's leading D2C egg brand founded in 2017. Headquartered in Gurugram, they deliver farm-fresh eggs across 20+ cities. Series B funded. Hiring Software Engineers, Data Scientists, Product Managers. Tech stack: React, Node.js, AWS, Python.`}
+                      className="mt-1.5 rounded-xl min-h-[180px]"
+                      rows={8}
+                    />
+                  </div>
+
+                  <Button onClick={handleAIFetch} disabled={aiLoading || !aiText.trim()} className="btn-gradient rounded-xl">
+                    {aiLoading
+                      ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Extracting with AI...</>
+                      : <><Sparkles className="w-4 h-4 mr-2" />Extract & Preview</>}
+                  </Button>
+
+                  {aiParsed && (
+                    <div className="rounded-xl border border-primary/30 bg-primary/5 p-5 space-y-4 animate-fade-in">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-semibold text-primary">✓ Extracted — review before saving</p>
+                        <button onClick={() => setAiParsed(null)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <PreviewRow label="Name" value={aiParsed.name} />
+                        <PreviewRow label="Sector" value={SECTOR_LABELS[aiParsed.sector || 'others'] || aiParsed.sector} />
+                        <PreviewRow label="City" value={aiParsed.hqCity} />
+                        <PreviewRow label="Size" value={aiParsed.companySize} />
+                        <PreviewRow label="Founded" value={aiParsed.foundedYear?.toString()} />
+                        <PreviewRow label="Website" value={aiParsed.website} />
+                        <div className="col-span-2"><PreviewRow label="Description" value={aiParsed.description} /></div>
+                        {aiParsed.rolesHiring && aiParsed.rolesHiring.length > 0 && (
+                          <div className="col-span-2">
+                            <p className="text-xs text-muted-foreground mb-1">Roles Hiring</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {aiParsed.rolesHiring.map((r, i) => (
+                                <span key={i} className="px-2 py-0.5 rounded-full text-xs bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300">{r}</span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {aiParsed.technologies && aiParsed.technologies.length > 0 && (
+                          <div className="col-span-2">
+                            <p className="text-xs text-muted-foreground mb-1">Technologies</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {aiParsed.technologies.map((t, i) => (
+                                <span key={i} className="px-2 py-0.5 rounded-full text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">{t}</span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex gap-3 pt-2">
+                        <Button variant="outline" onClick={() => setAiParsed(null)} className="rounded-xl">Dismiss</Button>
+                        <Button onClick={handleConfirmAI} disabled={aiLoading} className="btn-gradient rounded-xl">
+                          {aiLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</> : '✓ Confirm & Save'}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="manual" className="space-y-4">
+                  <ManualEntryForm onSave={addStartup} />
+                </TabsContent>
+              </Tabs>
+            </div>
+          </TabsContent>
+
+          {/* ── BULK CSV TAB ──────────────────────────────────────────── */}
+          <TabsContent value="bulk">
+            <div className="bg-card rounded-2xl border border-border/50 p-6 animate-fade-in space-y-5">
+              <div>
+                <h3 className="font-display text-lg font-semibold text-foreground mb-1">Bulk Import via CSV</h3>
+                <p className="text-sm text-muted-foreground">Download the template, fill in startup details, paste the CSV data below and import all at once.</p>
+              </div>
+
+              <div className="rounded-xl bg-muted/40 border border-border p-4">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Required CSV Columns</p>
+                <code className="text-xs text-foreground font-mono leading-relaxed break-all">
+                  name, tagline, description, sector, website, career_url, logo_url, brand_color, company_size, founded_year, hq_city, technologies, roles_hiring
+                </code>
+                <button
+                  onClick={() => {
+                    const blob = new Blob([CSV_TEMPLATE], { type: 'text/csv' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a'); a.href = url; a.download = 'startups-template.csv'; a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="mt-3 flex items-center gap-1.5 text-xs text-primary hover:underline"
+                >
+                  <Download className="w-3.5 h-3.5" /> Download CSV template
+                </button>
+              </div>
+
+              <div>
+                <Label>Paste CSV data here</Label>
+                <Textarea
+                  value={csvText}
+                  onChange={e => setCsvText(e.target.value)}
+                  placeholder={'name,tagline,sector,...\n"Eggoz","Fresh eggs","food",...'}
+                  className="mt-1.5 rounded-xl min-h-[200px] font-mono text-sm"
+                />
+              </div>
+
+              <Button onClick={handleCSVImport} disabled={csvLoading || !csvText.trim()} className="btn-gradient rounded-xl">
+                {csvLoading
+                  ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Importing...</>
+                  : <><PenLine className="w-4 h-4 mr-2" />Import All Rows</>}
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </PageLayout>
+  );
+}
