@@ -346,7 +346,7 @@ export default function IndianStartups() {
                       />
                       <div className="flex items-center gap-2 shrink-0">
                         {startup.website && (
-                          
+                          <a
                             href={startup.website}
                             target="_blank"
                             rel="noopener noreferrer"
