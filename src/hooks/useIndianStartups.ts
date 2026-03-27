@@ -17,6 +17,7 @@ export interface IndianStartup {
   hqCity?: string;
   technologies?: string[];
   rolesHiring?: string[];
+  funding?: string;
   isFeatured: boolean;
   createdAt: string;
   updatedAt: string;
@@ -39,6 +40,7 @@ function mapRow(r: any): IndianStartup {
     hqCity: r.hq_city,
     technologies: r.technologies,
     rolesHiring: r.roles_hiring,
+    funding: r.funding,
     isFeatured: r.is_featured ?? false,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -61,6 +63,7 @@ function toDbRow(data: Partial<IndianStartup>): any {
   if (data.hqCity !== undefined) row.hq_city = data.hqCity;
   if (data.technologies !== undefined) row.technologies = data.technologies;
   if (data.rolesHiring !== undefined) row.roles_hiring = data.rolesHiring;
+  if (data.funding !== undefined) row.funding = data.funding;
   if (data.isFeatured !== undefined) row.is_featured = data.isFeatured;
   return row;
 }
